@@ -1,49 +1,137 @@
-patches-own [
+globals [
+  block-size ;; Number of pixels between 2 roads
+  lights-interval ;; How often do lights change
+  lights-tick-count ;; Number of ticks since the last change of lights
   
+  roads ;; Set of road patches
+  intersections ;; Set of intersection patches
 ]
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Setup procedures
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to setup
   clear-all
+  reset-ticks
+  
+  set block-size 10 
+  set lights-interval 12
+  set lights-tick-count 0
+  
+  make-empty-map
+  make-roads
+  make-intersections
+  ;; make-cars // Create cars manually
+end
+
+to make-empty-map
   ask patches [
-    ifelse pxcor mod 5 = 0 or pycor mod 5 = 0 [
-      set pcolor black
-      if pxcor mod 5 = 0 and pycor mod 5 = 0 [
-        set pcolor blue
-      ]
-    ] [
-      set pcolor white
-    ]
-  ]
-  create-turtles 10 [
-    set heading 90
+    set pcolor 89
+    
+    ;; set plabel (word (pxcor mod block-size) "," (pycor mod block-size))
+    ;; set plabel (word pxcor "," pycor)
   ]
 end
 
+to make-roads
+  set roads patches with [
+    (pxcor mod block-size = 0 or pycor mod block-size = 0)
+    or (pxcor mod block-size = 1 or pycor mod block-size = 1)
+  ]
+    
+  ask roads [
+    set pcolor black
+  ]
+end
+
+to make-intersections
+  set intersections patches with [
+    pxcor mod block-size = 0 and pycor mod block-size = 0
+  ]
+
+  ask intersections [
+    ask patch-at 0 0 [ set pcolor green ]
+    ask patch-at 0 1 [ set pcolor green ]
+    ask patch-at 1 1 [ set pcolor green ]
+    ask patch-at 1 0 [ set pcolor green ]  
+  ]
+end
+
+to make-cars
+  set-default-shape turtles "default"
+  create-turtles 10 [
+    set heading 90
+    set size 1.7
+    setxy (random(7) * block-size) (random(5) * block-size )
+  ]
+end
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Go procedures
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 to go
-  ask turtles [
-    let g 0
-    ask patch-ahead 1 [
-      ifelse pcolor = blue [
-        set g 0
-      ] [
-        set g 1
-      ]
+  set lights-tick-count ((lights-tick-count + 1) mod lights-interval)
+  
+  change-lights
+  move-cars
+  
+  tick
+end
+
+to change-lights
+  if (lights-tick-count = 0) [
+    ask intersections [
+      let change-to green
+      if (pcolor = green) [ set change-to red ]
+      
+      ask patch-at 0 0 [ set pcolor change-to ]
+      ask patch-at 0 1 [ set pcolor change-to ]
+      ask patch-at 1 1 [ set pcolor change-to ]
+      ask patch-at 1 0 [ set pcolor change-to ] 
     ]
+  ]
+  
+end
+
+to move-cars
+  ask turtles [
+    
+    let g 1
+    ask patch-ahead 1 [ if (pcolor = red) [ set g 0 ] ] ;; Is green light?
+    if (pcolor = red) [ set g 1 ] ;; If already in intersection, ignore light
+    if (any? turtles-on patch-ahead 1) [ set g 0 ] ;; Stop if turtle ahead
     forward g
+    
+    ;; Turns
+    let can-turn-north? (pxcor mod block-size = 1 and pycor mod block-size = 1)
+    let can-turn-south? (pxcor mod block-size = 0 and pycor mod block-size = 0)
+    let can-turn-west? (pxcor mod block-size = 0 and pycor mod block-size = 1)
+    let can-turn-east? (pxcor mod block-size = 1 and pycor mod block-size = 0)
+    
+    ;; print (word "x:" (pxcor mod block-size) " y:" (pycor mod block-size))
+    
+    if (random(100) < direction-change-rate) [
+      if (can-turn-north?) [ set heading 0 ]
+      if (can-turn-south?) [ set heading 180 ]
+      if (can-turn-west?) [ set heading 270 ]
+      if (can-turn-east?) [ set heading 90 ]
+    ]
+    
   ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-210
-10
-649
-470
-16
-16
-13.0
+234
+11
+804
+442
+-1
+-1
+8.0
 1
-10
+6
 1
 1
 1
@@ -51,12 +139,12 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
 0
+69
 0
+49
+1
+1
 1
 ticks
 30.0
@@ -118,16 +206,16 @@ NIL
 T
 OBSERVER
 NIL
-NIL
+S
 NIL
 NIL
 1
 
 BUTTON
-111
-253
-174
-286
+19
+307
+82
+340
 NIL
 go
 T
@@ -135,7 +223,56 @@ T
 T
 OBSERVER
 NIL
+R
 NIL
+NIL
+1
+
+SLIDER
+25
+199
+217
+232
+direction-change-rate
+direction-change-rate
+0
+100
+36
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+90
+308
+175
+341
+go-once
+go
+NIL
+1
+T
+OBSERVER
+NIL
+O
+NIL
+NIL
+1
+
+BUTTON
+89
+251
+186
+284
+NIL
+make-cars
+NIL
+1
+T
+OBSERVER
+NIL
+M
 NIL
 NIL
 1
