@@ -1,3 +1,38 @@
+patches-own [
+  
+]
+
+
+to setup
+  clear-all
+  ask patches [
+    ifelse pxcor mod 5 = 0 or pycor mod 5 = 0 [
+      set pcolor black
+      if pxcor mod 5 = 0 and pycor mod 5 = 0 [
+        set pcolor blue
+      ]
+    ] [
+      set pcolor white
+    ]
+  ]
+  create-turtles 10 [
+    set heading 90
+  ]
+end
+
+to go
+  ask turtles [
+    let g 0
+    ask patch-ahead 1 [
+      ifelse pcolor = blue [
+        set g 0
+      ] [
+        set g 1
+      ]
+    ]
+    forward g
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
@@ -25,6 +60,85 @@ GRAPHICS-WINDOW
 1
 ticks
 30.0
+
+SLIDER
+21
+46
+201
+79
+car-count-in-x-direction
+car-count-in-x-direction
+0
+100
+50
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+25
+154
+197
+187
+max-speed
+max-speed
+0
+100
+50
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+21
+100
+201
+133
+car-count-in-y-direction
+car-count-in-y-direction
+0
+100
+50
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+19
+251
+82
+284
+NIL
+setup\n
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+111
+253
+174
+286
+NIL
+go
+T
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
