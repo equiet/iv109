@@ -72,9 +72,7 @@ to setup
     set spawn-location "west"
     ;; set direction "east"
   ]
-  ask patches with [
-    patch-type = "spawn"
-  ] [
+  ask patches with [ patch-type = "spawn" ] [
     set pcolor 44
   ]
   
@@ -136,12 +134,45 @@ to add-from-west
   ]
 end
 
+;;to add-from-north
+;;  car-factory "north" 180
+;;end
+
+;;to add-from-south
+;;  car-factory "south" 0
+;;end
+
+;;to add-from-east
+;;  car-factory "east" 270
+;;end
+
+;;to add-from-west
+;;  car-factory "west" 90
+;;end
+
+;;to car-factory [ location orientation ]
+;;  ask patches with [ spawn-location = location ] [
+;;    create-turtles 1 [
+;;      setxy pxcor pycor
+;;      set heading orientation
+;;      set color 95
+;;      set size 1.7
+;;    ]
+;;  ]
+;;end
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Go
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
+  move-turtles
+  
+  tick
+end
+
+to move-turtles
 
   ask turtles [
   
@@ -160,15 +191,16 @@ to go
       set speed 0
     ]
     
+    ;; Move
     forward speed
   
     ;; Die on border
     let should-die? false
     ask patch-here [ if (patch-type = "border") [ set should-die? true ] ]
     if (should-die?) [ die ]
+    
   ]
   
-  tick
 end
 
 
