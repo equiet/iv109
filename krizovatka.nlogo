@@ -3,8 +3,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 globals [
-  ;; patches-border
-  ;; patches-grass
   map-center-x
   map-center-y
 ]
@@ -12,6 +10,7 @@ globals [
 patches-own [
   patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn"
   spawn-location ;; For spawns, can be points of compass
+  can-go? ;; Is green light?
   ;; direction ;; Can be points of compass
 ]
 
@@ -51,17 +50,8 @@ to setup
     set patch-type "border"
     set pcolor 3
   ]
-  
-  ;; 4. Make intersection
-  ask patches with [
-    (pxcor = map-center-x or pxcor = (map-center-x + 1))
-    and (pycor = map-center-y or pycor = (map-center-y + 1))
-  ] [
-    set patch-type "intersection"
-    set pcolor 5
-  ]
-  
-  ;; 5. Make spawn areas
+
+  ;; 4. Make spawn areas
   ask patch (map-center-x + 1) 1 [
     set patch-type "spawn"
     set spawn-location "south"
@@ -87,7 +77,23 @@ to setup
   ] [
     set pcolor 44
   ]
+  
+  ;; 5. Make intersections
+  change-intersection (map-center-x - 1) (map-center-y) true
+  change-intersection (map-center-x + 1) (map-center-y - 1) false
+  change-intersection (map-center-x + 2) (map-center-y + 1) true
+  change-intersection (map-center-x) (map-center-y + 2) false
+  
 end
+
+  to change-intersection [x y green?]
+    ask patch x y [
+      set patch-type "intersection"
+      ifelse (green?) [ set pcolor 65 ] [ set pcolor 15 ]
+      set can-go? green?
+    ]
+  end
+  
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -138,7 +144,23 @@ end
 to go
 
   ask turtles [
-    forward 1
+  
+    ;; Move at this speed
+    let speed 1
+    
+    ;; Stop if on red light
+    ask patch-here [
+      if (patch-type = "intersection" and (not can-go?)) [
+        set speed 0
+      ]
+    ]
+    
+    ;; Stop if turtle ahead
+    if (any? turtles-on patch-ahead 1) [
+      set speed 0
+    ]
+    
+    forward speed
   
     ;; Die on border
     let should-die? false
@@ -147,6 +169,23 @@ to go
   ]
   
   tick
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Switch lights
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to switch-lights
+  ask patches with [
+    patch-type = "intersection"
+  ] [
+    ifelse (can-go?) [
+      change-intersection pxcor pycor false
+    ] [
+      change-intersection pxcor pycor true
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -211,10 +250,10 @@ NIL
 1
 
 BUTTON
-326
-119
-459
-152
+322
+120
+455
+153
 NIL
 add-from-north
 NIL
@@ -312,6 +351,23 @@ false
 "" ""
 PENS
 "default" 1.0 0 -13791810 true "" "plot count turtles"
+
+BUTTON
+24
+140
+136
+173
+NIL
+switch-lights
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
