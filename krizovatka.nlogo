@@ -99,67 +99,30 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to add-from-north
-  create-turtles 1 [
-    setxy map-center-x (max-pycor - 1)
-    set heading 180
-    set color 95
-    set size 1.7
-  ]
+  car-factory "north" 180
 end
 
 to add-from-south
-  create-turtles 1 [
-    setxy (map-center-x + 1) 1
-    set heading 0
-    set color 95
-    set size 1.7
-  ]
+  car-factory "south" 0
 end
 
 to add-from-east
-  create-turtles 1 [
-    setxy (max-pxcor - 1) (map-center-y + 1)
-    set heading 270
-    set color 95
-    set size 1.7
-  ]
+  car-factory "east" 270
 end
 
 to add-from-west
-  create-turtles 1 [
-    setxy 1 map-center-y
-    set heading 90
-    set color 95
-    set size 1.7
-  ]
+  car-factory "west" 90
 end
 
-;;to add-from-north
-;;  car-factory "north" 180
-;;end
-
-;;to add-from-south
-;;  car-factory "south" 0
-;;end
-
-;;to add-from-east
-;;  car-factory "east" 270
-;;end
-
-;;to add-from-west
-;;  car-factory "west" 90
-;;end
-
-;;to car-factory [ location orientation ]
-;;  ask patches with [ spawn-location = location ] [
-;;    create-turtles 1 [
-;;      setxy pxcor pycor
-;;      set heading orientation
-;;      set color 95
-;;      set size 1.7
-;;    ]
-;;  ]
-;;end
+to car-factory [ location orientation ]
+  ask patches with [ spawn-location = location ] [
+    sprout 1 [
+      set heading orientation
+      set color 95
+      set size 1.7
+    ]
+  ]
+end
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
