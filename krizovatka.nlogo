@@ -3,6 +3,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 globals [
+  world1
+  world2
 ]
 
 patches-own [
@@ -19,14 +21,14 @@ patches-own [
 
 to setup
   clear-all
-  reset-ticks
   
-  make-world 0 0 21 21
+  set world1 (make-world 0 0 21 21)
   make-intersection-lights-basic 0 0 21 21
   
-  make-world 21 0 21 21
+  set world2 (make-world 21 0 21 21)
   make-intersection-lights-basic 21 0 21 21
   
+  reset-ticks
 end
 
 
@@ -34,15 +36,12 @@ end
 ;; Create worlds & intersections
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to make-world [ offset-x offset-y width height ]
+to-report make-world [ offset-x offset-y width height ]
 
   let center-x (offset-x + (width - 1) / 2)
   let center-y (offset-y + (height - 1) / 2)
   let max-x (offset-x + width)
   let max-y (offset-y + height)
-
-  print max-x
-  print max-y
   
   ;; 1. Get patches of current world
   let current-world patches with [
@@ -98,6 +97,8 @@ to make-world [ offset-x offset-y width height ]
   ask patches with [ patch-type = "spawn" ] [
     set pcolor 44
   ]
+  
+  report current-world
   
 end
 
@@ -220,10 +221,10 @@ to switch-lights
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-157
-197
-683
-492
+207
+242
+733
+537
 -1
 -1
 12.0
@@ -264,10 +265,10 @@ NIL
 1
 
 BUTTON
-701
-323
-834
-356
+751
+368
+884
+401
 NIL
 add-from-east
 NIL
@@ -281,10 +282,10 @@ NIL
 1
 
 BUTTON
-349
-111
-486
-144
+399
+156
+536
+189
 NIL
 add-from-north
 NIL
@@ -298,10 +299,10 @@ NIL
 1
 
 BUTTON
-359
-505
-493
-538
+409
+550
+543
+583
 NIL
 add-from-south
 NIL
@@ -315,10 +316,10 @@ NIL
 1
 
 BUTTON
-15
-319
-141
-352
+65
+364
+191
+397
 NIL
 add-from-west
 NIL
@@ -332,10 +333,10 @@ NIL
 1
 
 BUTTON
-20
-74
-105
-107
+104
+21
+189
+54
 go-once
 go
 NIL
@@ -349,10 +350,10 @@ NIL
 1
 
 BUTTON
-125
-75
-188
-108
+209
+22
+272
+55
 NIL
 go
 T
@@ -365,29 +366,11 @@ NIL
 NIL
 1
 
-PLOT
-55
-692
-255
-842
-Number of cars
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-false
-"" ""
-PENS
-"default" 1.0 0 -13791810 true "" "plot count turtles"
-
 BUTTON
-24
-140
-136
-173
+290
+22
+402
+55
 NIL
 switch-lights
 NIL
@@ -401,10 +384,10 @@ NIL
 1
 
 SLIDER
-349
-151
-487
-184
+399
+196
+537
+229
 north-frequency
 north-frequency
 0
@@ -416,10 +399,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-700
-367
-835
-400
+750
+412
+885
+445
 east-frequency
 east-frequency
 0
@@ -431,10 +414,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-358
-548
-495
-581
+408
+593
+545
+626
 south-frequency
 south-frequency
 0
@@ -446,10 +429,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-14
-362
-143
-395
+64
+407
+193
+440
 west-frequency
 west-frequency
 0
@@ -459,6 +442,42 @@ west-frequency
 1
 NIL
 HORIZONTAL
+
+PLOT
+208
+667
+469
+842
+World 1
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"cars" 1.0 0 -16777216 true "" "plot count turtles-on world1"
+
+PLOT
+473
+667
+733
+842
+World 2
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"cars" 1.0 0 -16777216 true "" "plot count turtles-on world2"
 
 @#$#@#$#@
 ## WHAT IS IT?
