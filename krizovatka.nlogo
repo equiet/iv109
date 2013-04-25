@@ -3,8 +3,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 globals [
-  map-center-x
-  map-center-y
 ]
 
 patches-own [
@@ -23,51 +21,76 @@ to setup
   clear-all
   reset-ticks
   
-  set map-center-x 10
-  set map-center-y 10
+  make-world 0 0 21 21
+  make-intersection-lights-basic 0 0 21 21
   
+  make-world 21 0 21 21
+  make-intersection-lights-basic 21 0 21 21
   
-  ;; 1. Make grass
-  ask patches [
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Create worlds & intersections
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to make-world [ offset-x offset-y width height ]
+
+  let center-x (offset-x + (width - 1) / 2)
+  let center-y (offset-y + (height - 1) / 2)
+  let max-x (offset-x + width)
+  let max-y (offset-y + height)
+
+  print max-x
+  print max-y
+  
+  ;; 1. Get patches of current world
+  let current-world patches with [
+    (pxcor >= offset-x and pxcor <= max-x)
+    and (pycor >= offset-y and pycor <= max-y)
+  ]
+
+  ;; 2. Make grass
+  ask current-world [
     set patch-type "grass"
     set pcolor 56
   ]
   
-  ;; 2. Make roads
-  ask patches with [
-    (pxcor = map-center-x or pxcor = (map-center-x + 1))
-    or (pycor = map-center-y or pycor = (map-center-y + 1))
+  ;; 3. Make roads
+  ask current-world with [
+    (pxcor = center-x or pxcor = (center-x + 1))
+    or (pycor = center-y or pycor = (center-y + 1))
   ] [
     set patch-type "road"
     set pcolor 0
   ]
   
-  ;; 3. Make border
-  ask patches with [
-    (pxcor = max-pxcor or pxcor = 0)
-    or (pycor = max-pycor or pycor = 0)
+  ;; 4. Make border
+  ask current-world with [
+    (pxcor = max-x or pxcor = offset-x)
+    or (pycor = max-y or pycor = offset-y)
   ] [
     set patch-type "border"
     set pcolor 3
   ]
 
-  ;; 4. Make spawn areas
-  ask patch (map-center-x + 1) 1 [
+  ;; 5. Make spawn areas
+  ask patch (center-x + 1) (offset-y + 1) [
     set patch-type "spawn"
     set spawn-location "south"
     ;; set direction "north"
   ]
-  ask patch (max-pxcor - 1) (map-center-y + 1) [
+  ask patch (max-x - 1) (center-y + 1) [
     set patch-type "spawn"
     set spawn-location "east"
     ;; set direction "west"
   ]
-  ask patch map-center-x (max-pycor - 1) [
+  ask patch center-x (max-y - 1) [
     set patch-type "spawn"
     set spawn-location "north"
     ;; set direction "south"
   ]
-  ask patch 1 map-center-y [
+  ask patch (offset-x + 1) center-y [
     set patch-type "spawn"
     set spawn-location "west"
     ;; set direction "east"
@@ -76,23 +99,28 @@ to setup
     set pcolor 44
   ]
   
-  ;; 5. Make intersections
-  change-intersection (map-center-x - 1) (map-center-y) true
-  change-intersection (map-center-x + 1) (map-center-y - 1) false
-  change-intersection (map-center-x + 2) (map-center-y + 1) true
-  change-intersection (map-center-x) (map-center-y + 2) false
+end
+
+to make-intersection-lights-basic [ offset-x offset-y width height ]
+
+  let center-x (offset-x + (width - 1) / 2)
+  let center-y (offset-y + (height - 1) / 2)
+  
+  change-light (center-x - 1) (center-y) true
+  change-light (center-x + 1) (center-y - 1) false
+  change-light (center-x + 2) (center-y + 1) true
+  change-light (center-x) (center-y + 2) false
   
 end
 
-  to change-intersection [x y green?]
-    ask patch x y [
-      set patch-type "intersection"
-      ifelse (green?) [ set pcolor 65 ] [ set pcolor 15 ]
-      set can-go? green?
-    ]
-  end
-  
+to change-light [x y green?]
 
+  ask patch x y [
+    set patch-type "intersection"
+    ifelse (green?) [ set pcolor 65 ] [ set pcolor 15 ]
+    set can-go? green?
+  ]
+end
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Add cars
@@ -184,18 +212,18 @@ to switch-lights
     patch-type = "intersection"
   ] [
     ifelse (can-go?) [
-      change-intersection pxcor pycor false
+      change-light pxcor pycor false
     ] [
-      change-intersection pxcor pycor true
+      change-light pxcor pycor true
     ]
   ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-251
-168
-525
-463
+157
+197
+683
+492
 -1
 -1
 12.0
@@ -209,7 +237,7 @@ GRAPHICS-WINDOW
 1
 1
 0
-21
+42
 0
 21
 1
@@ -236,10 +264,10 @@ NIL
 1
 
 BUTTON
-539
-288
-672
-321
+701
+323
+834
+356
 NIL
 add-from-east
 NIL
@@ -253,10 +281,10 @@ NIL
 1
 
 BUTTON
-327
-82
-464
-115
+349
+111
+486
+144
 NIL
 add-from-north
 NIL
@@ -270,10 +298,10 @@ NIL
 1
 
 BUTTON
-323
-475
-457
-508
+359
+505
+493
+538
 NIL
 add-from-south
 NIL
@@ -287,10 +315,10 @@ NIL
 1
 
 BUTTON
-109
-290
-235
-323
+15
+319
+141
+352
 NIL
 add-from-west
 NIL
@@ -339,9 +367,9 @@ NIL
 
 PLOT
 55
-565
+692
 255
-715
+842
 Number of cars
 NIL
 NIL
@@ -373,25 +401,25 @@ NIL
 1
 
 SLIDER
-327
-122
-465
-155
+349
+151
+487
+184
 north-frequency
 north-frequency
 0
 100
-9
+13
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-538
-332
-673
-365
+700
+367
+835
+400
 east-frequency
 east-frequency
 0
@@ -403,10 +431,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-322
-518
-459
-551
+358
+548
+495
+581
 south-frequency
 south-frequency
 0
@@ -418,10 +446,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-108
-333
-237
-366
+14
+362
+143
+395
 west-frequency
 west-frequency
 0
