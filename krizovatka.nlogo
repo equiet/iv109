@@ -124,6 +124,13 @@ to car-factory [ location orientation ]
   ]
 end
 
+to add-cars-on-frequency
+  if (random 100 < north-frequency) [ add-from-north ]
+  if (random 100 < south-frequency) [ add-from-south ]
+  if (random 100 < east-frequency) [ add-from-east ]
+  if (random 100 < west-frequency) [ add-from-west ]
+end
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Go
@@ -131,6 +138,7 @@ end
 
 to go
   move-turtles
+  add-cars-on-frequency
   
   tick
 end
@@ -184,13 +192,13 @@ to switch-lights
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-275
-162
-520
-413
+251
+168
+525
+463
 -1
 -1
-10.0
+12.0
 1
 6
 1
@@ -228,10 +236,10 @@ NIL
 1
 
 BUTTON
-524
-279
-627
-312
+539
+288
+672
+321
 NIL
 add-from-east
 NIL
@@ -245,10 +253,10 @@ NIL
 1
 
 BUTTON
-322
-120
-455
-153
+327
+82
+464
+115
 NIL
 add-from-north
 NIL
@@ -262,10 +270,10 @@ NIL
 1
 
 BUTTON
-320
-424
-454
+323
+475
 457
+508
 NIL
 add-from-south
 NIL
@@ -279,10 +287,10 @@ NIL
 1
 
 BUTTON
-132
-283
-258
-316
+109
+290
+235
+323
 NIL
 add-from-west
 NIL
@@ -363,6 +371,66 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+327
+122
+465
+155
+north-frequency
+north-frequency
+0
+100
+9
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+538
+332
+673
+365
+east-frequency
+east-frequency
+0
+100
+12
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+322
+518
+459
+551
+south-frequency
+south-frequency
+0
+100
+6
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+108
+333
+237
+366
+west-frequency
+west-frequency
+0
+100
+11
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
