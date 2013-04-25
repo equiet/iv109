@@ -11,7 +11,8 @@ patches-own [
   patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn"
   spawn-location ;; For spawns, can be points of compass
   can-go? ;; Is green light?
-  ;; direction ;; Can be points of compass
+  can-go-north? can-go-south? can-go-east? can-go-west?
+  chosen-direction
 ]
 
 
@@ -26,22 +27,25 @@ to setup
   make-intersection-lights-basic 0 0 21 21
   
   set world2 (make-world 21 0 21 21)
-  make-intersection-lights-basic 21 0 21 21
+  make-intersection-roundabout 21 0 21 21
   
   reset-ticks
 end
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Create worlds & intersections
+;; Create worlds
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to-report make-world [ offset-x offset-y width height ]
+
+  let tmp (list)
 
   let center-x (offset-x + (width - 1) / 2)
   let center-y (offset-y + (height - 1) / 2)
   let max-x (offset-x + width)
   let max-y (offset-y + height)
+  
   
   ;; 1. Get patches of current world
   let current-world patches with [
@@ -49,50 +53,53 @@ to-report make-world [ offset-x offset-y width height ]
     and (pycor >= offset-y and pycor <= max-y)
   ]
 
+
   ;; 2. Make grass
-  ask current-world [
-    set patch-type "grass"
-    set pcolor 56
-  ]
+  make-grass current-world
+  
   
   ;; 3. Make roads
-  ask current-world with [
-    (pxcor = center-x or pxcor = (center-x + 1))
-    or (pycor = center-y or pycor = (center-y + 1))
-  ] [
-    set patch-type "road"
-    set pcolor 0
-  ]
+  set tmp (current-world with [ pxcor = center-x ])
+  make-road tmp
+  set-direction-south tmp true
+  
+  set tmp (current-world with [ pxcor = center-x + 1])
+  make-road tmp
+  set-direction-north tmp true
+  
+  set tmp (current-world with [ pycor = center-y ])
+  make-road tmp
+  set-direction-east tmp true
+  
+  set tmp (current-world with [ pycor = center-y + 1 ])
+  make-road tmp
+  set-direction-west tmp true
+  
   
   ;; 4. Make border
-  ask current-world with [
+  set tmp current-world with [
     (pxcor = max-x or pxcor = offset-x)
     or (pycor = max-y or pycor = offset-y)
-  ] [
-    set patch-type "border"
-    set pcolor 3
   ]
+  make-border tmp
+   
 
   ;; 5. Make spawn areas
   ask patch (center-x + 1) (offset-y + 1) [
     set patch-type "spawn"
     set spawn-location "south"
-    ;; set direction "north"
   ]
   ask patch (max-x - 1) (center-y + 1) [
     set patch-type "spawn"
     set spawn-location "east"
-    ;; set direction "west"
   ]
   ask patch center-x (max-y - 1) [
     set patch-type "spawn"
     set spawn-location "north"
-    ;; set direction "south"
   ]
   ask patch (offset-x + 1) center-y [
     set patch-type "spawn"
     set spawn-location "west"
-    ;; set direction "east"
   ]
   ask patches with [ patch-type = "spawn" ] [
     set pcolor 44
@@ -101,6 +108,53 @@ to-report make-world [ offset-x offset-y width height ]
   report current-world
   
 end
+
+to make-grass [ fields ]
+  ask fields [
+    set patch-type "grass"
+    set pcolor 56
+    set can-go-north? false
+    set can-go-south? false
+    set can-go-east? false
+    set can-go-west? false
+  ]
+end
+
+to make-road [ fields ]
+  ask fields [
+    set patch-type "road"
+    set pcolor 1
+  ]
+end
+
+to make-border [ fields ]
+  ask fields [
+    set patch-type "border"
+    set pcolor 3
+    set can-go-north? false
+    set can-go-south? false
+    set can-go-east? false
+    set can-go-west? false
+  ]
+end
+
+to set-direction-north [ fields value ]
+  ask fields [ set can-go-north? value ]
+end
+to set-direction-south [ fields value ]
+  ask fields [ set can-go-south? value ]
+end
+to set-direction-east [ fields value ]
+  ask fields [ set can-go-east? value ]
+end
+to set-direction-west [ fields value ]
+  ask fields [ set can-go-west? value ]
+end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Create intersections
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to make-intersection-lights-basic [ offset-x offset-y width height ]
 
@@ -123,30 +177,95 @@ to change-light [x y green?]
   ]
 end
 
+to make-intersection-roundabout [ offset-x offset-y width height ]
+
+  let tmp (list)
+
+  let center-x (offset-x + (width - 1) / 2)
+  let center-y (offset-y + (height - 1) / 2)
+    
+  
+  ;; Center grass
+  set tmp patches with [
+    (pxcor = center-x or pxcor = (center-x + 1))
+    and (pycor = center-y or pycor = (center-y + 1))
+  ]
+  make-grass tmp
+  
+  
+  ;; Bottom road
+  set tmp patches with [
+     (pxcor >= (center-x - 1) and pxcor < (center-x + 2))
+     and (pycor = (center-y - 1))
+  ]
+  make-road tmp
+  set-direction-east tmp true
+  
+  set tmp (tmp with [ pxcor = center-x + 1 ])
+  set-direction-north tmp false
+  
+  
+  ;; Top road
+  set tmp patches with [
+     (pxcor > (center-x - 1) and pxcor <= (center-x + 2))
+     and (pycor = (center-y + 2))
+  ]
+  make-road tmp
+  set-direction-west tmp true
+  
+  set tmp (tmp with [ pxcor = center-x ])
+  set-direction-south tmp false
+  
+  
+  ;; Left road
+  set tmp patches with [
+     (pxcor = (center-x - 1))
+     and (pycor > (center-y - 1) and pycor <= (center-y + 2))
+  ]
+  make-road tmp
+  set-direction-south tmp true
+  
+  set tmp (tmp with [ pycor = center-y ])
+  set-direction-east tmp false
+  
+  
+  ;; Right road
+  set tmp patches with [
+     (pxcor = (center-x + 2))
+     and (pycor >= (center-y - 1) and pycor < (center-y + 2))
+  ]
+  make-road tmp
+  set-direction-north tmp true
+  
+  set tmp (tmp with [ pycor = center-y + 1 ])
+  set-direction-west tmp false
+  
+end
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Add cars
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to add-from-north
-  car-factory "north" 180
+  car-factory "north"
 end
 
 to add-from-south
-  car-factory "south" 0
+  car-factory "south"
 end
 
 to add-from-east
-  car-factory "east" 270
+  car-factory "east"
 end
 
 to add-from-west
-  car-factory "west" 90
+  car-factory "west"
 end
 
-to car-factory [ location orientation ]
+to car-factory [ location ]
   ask patches with [ spawn-location = location ] [
     sprout 1 [
-      set heading orientation
+      set chosen-direction "undecided"
       set color 95
       set size 1.7
     ]
@@ -176,6 +295,25 @@ to move-turtles
 
   ask turtles [
   
+    ;; Get turn choices
+    let turn-choices (list)
+    if can-go-north? [ set turn-choices (lput "north" turn-choices) ]
+    if can-go-south? [ set turn-choices (lput "south" turn-choices) ]
+    if can-go-east? [ set turn-choices (lput "east" turn-choices) ]
+    if can-go-west? [ set turn-choices (lput "west" turn-choices) ]
+    
+    ;; Die if no turn options
+    if (length turn-choices = 0) [ die ]
+    
+    ;; Make random turn
+    if (chosen-direction = "undecided") [
+      set chosen-direction (item (random (length turn-choices)) turn-choices);
+      if (chosen-direction = "north") [ set heading 0 ]
+      if (chosen-direction = "south") [ set heading 180 ]
+      if (chosen-direction = "east") [ set heading 90 ]
+      if (chosen-direction = "west") [ set heading 270 ]
+    ]
+    
     ;; Move at this speed
     let speed 1
     
@@ -192,12 +330,10 @@ to move-turtles
     ]
     
     ;; Move
-    forward speed
-  
-    ;; Die on border
-    let should-die? false
-    ask patch-here [ if (patch-type = "border") [ set should-die? true ] ]
-    if (should-die?) [ die ]
+    if (speed > 0) [
+      forward speed
+      set chosen-direction "undecided"
+    ]
     
   ]
   
@@ -249,9 +385,9 @@ ticks
 
 BUTTON
 19
-21
+20
 85
-54
+53
 NIL
 setup
 NIL
@@ -334,9 +470,9 @@ NIL
 
 BUTTON
 104
-21
+20
 189
-54
+53
 go-once
 go
 NIL
@@ -351,9 +487,9 @@ NIL
 
 BUTTON
 209
-22
+21
 272
-55
+54
 NIL
 go
 T
@@ -368,9 +504,9 @@ NIL
 
 BUTTON
 290
-22
+21
 402
-55
+54
 NIL
 switch-lights
 NIL
@@ -391,8 +527,8 @@ SLIDER
 north-frequency
 north-frequency
 0
-100
-13
+50
+19
 1
 1
 NIL
@@ -406,8 +542,8 @@ SLIDER
 east-frequency
 east-frequency
 0
-100
-12
+50
+13
 1
 1
 NIL
@@ -421,8 +557,8 @@ SLIDER
 south-frequency
 south-frequency
 0
-100
-6
+50
+17
 1
 1
 NIL
@@ -436,7 +572,7 @@ SLIDER
 west-frequency
 west-frequency
 0
-100
+50
 11
 1
 1
@@ -445,9 +581,9 @@ HORIZONTAL
 
 PLOT
 208
-667
-469
-842
+687
+732
+862
 World 1
 NIL
 NIL
@@ -459,25 +595,8 @@ true
 true
 "" ""
 PENS
-"cars" 1.0 0 -16777216 true "" "plot count turtles-on world1"
-
-PLOT
-473
-667
-733
-842
-World 2
-NIL
-NIL
-0.0
-10.0
-0.0
-10.0
-true
-true
-"" ""
-PENS
-"cars" 1.0 0 -16777216 true "" "plot count turtles-on world2"
+"lights-basic" 1.0 0 -11221820 true "" "plot count turtles-on world1"
+"roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
 
 @#$#@#$#@
 ## WHAT IS IT?
