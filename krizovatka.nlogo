@@ -274,7 +274,7 @@ to car-factory [ location orientation ]
       set chosen-direction "undecided"
       set heading orientation
       set color car-color
-      set size 1.7
+      set size 1.5
     ]
   ]
 end
@@ -638,8 +638,8 @@ true
 true
 "" ""
 PENS
-"lights-basic" 1.0 0 -11221820 true "" "plot mean [ticks-alive] of turtles-on world1"
-"roundabout" 1.0 0 -2674135 true "" "plot mean [ticks-alive] of turtles-on world2"
+"lights-basic" 1.0 0 -11221820 true "" "if (count turtles-on world1 > 0 ) [ plot mean [ticks-alive] of turtles-on world1 ]"
+"roundabout" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [ticks-alive] of turtles-on world2 ]"
 
 SLIDER
 148
@@ -650,7 +650,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-79
+53
 1
 1
 NIL
@@ -1006,7 +1006,7 @@ NetLogo 5.0.4
     org.nlogo.sdm.gui.AggregateDrawing 4
         org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 174 143 60 40
             org.nlogo.sdm.gui.WrappedStock "" "" 0
-        org.nlogo.sdm.gui.RateConnection 3 246 162 333 162 396 162 NULL NULL 0 0 0
+        org.nlogo.sdm.gui.RateConnection 3 246 162 321 162 396 162 NULL NULL 0 0 0
             org.jhotdraw.standard.ChopBoxConnector REF 1
             org.jhotdraw.standard.ChopBoxConnector
                 org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 408 143 60 40
