@@ -251,27 +251,28 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to add-from-north
-  car-factory "north"
+  car-factory "north" 180
 end
 
 to add-from-south
-  car-factory "south"
+  car-factory "south" 0
 end
 
 to add-from-east
-  car-factory "east"
+  car-factory "east" 270
 end
 
 to add-from-west
-  car-factory "west"
+  car-factory "west" 90
 end
 
-to car-factory [ location ] 
+to car-factory [ location orientation ] 
   let car-color (random 5) * 10 + 74 + random 4 
   
   ask patches with [ spawn-location = location ] [
     sprout 1 [
       set chosen-direction "undecided"
+      set heading orientation
       set color car-color
       set size 1.7
     ]
@@ -291,8 +292,8 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-  move-turtles
   add-cars-on-frequency
+  move-turtles
   
   if first-tick-after-setup? [
     reset-ticks
@@ -317,7 +318,7 @@ to move-turtles
     
     ;; Make random turn
     if (chosen-direction = "undecided") [
-      set chosen-direction (item (random (length turn-choices)) turn-choices);
+      set chosen-direction (item (random (length turn-choices)) turn-choices)
       if (chosen-direction = "north") [ set heading 0 ]
       if (chosen-direction = "south") [ set heading 180 ]
       if (chosen-direction = "east") [ set heading 90 ]
@@ -542,7 +543,7 @@ north-frequency
 north-frequency
 0
 50
-30
+19
 1
 1
 NIL
@@ -557,7 +558,7 @@ east-frequency
 east-frequency
 0
 50
-50
+21
 1
 1
 NIL
@@ -572,7 +573,7 @@ south-frequency
 south-frequency
 0
 50
-40
+20
 1
 1
 NIL
