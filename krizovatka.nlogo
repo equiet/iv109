@@ -298,6 +298,7 @@ to go
   
   if first-tick-after-setup? [
     reset-ticks
+    set first-tick-after-setup? false
   ]
 
   switch-lights-on-frequency
@@ -661,7 +662,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-96
+79
 1
 1
 NIL
