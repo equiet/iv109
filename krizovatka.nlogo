@@ -5,6 +5,7 @@
 globals [
   world1
   world2
+  first-tick-after-setup?
 ]
 
 patches-own [
@@ -13,6 +14,10 @@ patches-own [
   can-go? ;; Is green light?
   can-go-north? can-go-south? can-go-east? can-go-west?
   chosen-direction
+]
+
+turtles-own [
+  ticks-alive
 ]
 
 
@@ -29,7 +34,7 @@ to setup
   set world2 (make-world 21 0 21 21)
   make-intersection-roundabout 21 0 21 21
   
-  reset-ticks
+  set first-tick-after-setup? true
 end
 
 
@@ -169,7 +174,6 @@ to make-intersection-lights-basic [ offset-x offset-y width height ]
 end
 
 to change-light [x y green?]
-
   ask patch x y [
     set patch-type "intersection"
     ifelse (green?) [ set pcolor 65 ] [ set pcolor 15 ]
@@ -288,6 +292,10 @@ to go
   move-turtles
   add-cars-on-frequency
   
+  if first-tick-after-setup? [
+    reset-ticks
+  ]
+  
   tick
 end
 
@@ -334,6 +342,10 @@ to move-turtles
       forward speed
       set chosen-direction "undecided"
     ]
+    
+    
+    ;; Increment how long turtle is alive
+    set ticks-alive ticks-alive + 1
     
   ]
   
@@ -528,7 +540,7 @@ north-frequency
 north-frequency
 0
 50
-19
+22
 1
 1
 NIL
@@ -543,7 +555,7 @@ east-frequency
 east-frequency
 0
 50
-13
+24
 1
 1
 NIL
@@ -558,7 +570,7 @@ south-frequency
 south-frequency
 0
 50
-17
+23
 1
 1
 NIL
@@ -573,18 +585,18 @@ west-frequency
 west-frequency
 0
 50
-11
+23
 1
 1
 NIL
 HORIZONTAL
 
 PLOT
-208
-687
-732
-862
-World 1
+910
+84
+1434
+259
+Turtles count
 NIL
 NIL
 0.0
@@ -597,6 +609,25 @@ true
 PENS
 "lights-basic" 1.0 0 -11221820 true "" "plot count turtles-on world1"
 "roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
+
+PLOT
+902
+306
+1435
+456
+Turtles average time spent on road
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"lights-basic" 1.0 0 -11221820 true "" "plot mean [ticks-alive] of turtles-on world1"
+"roundabout" 1.0 0 -2674135 true "" "plot mean [ticks-alive] of turtles-on world2"
 
 @#$#@#$#@
 ## WHAT IS IT?
