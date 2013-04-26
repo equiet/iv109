@@ -270,7 +270,11 @@ to car-factory [ location ]
   ask patches with [ spawn-location = location ] [
     sprout 1 [
       set chosen-direction "undecided"
-      set color 95
+      ifelse random-color-turtles? [
+        set color random 100
+      ] [
+        set color 95
+      ]
       set size 1.7
     ]
   ]
@@ -628,6 +632,17 @@ true
 PENS
 "lights-basic" 1.0 0 -11221820 true "" "plot mean [ticks-alive] of turtles-on world1"
 "roundabout" 1.0 0 -2674135 true "" "plot mean [ticks-alive] of turtles-on world2"
+
+SWITCH
+427
+23
+601
+56
+random-color-turtles?
+random-color-turtles?
+0
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?
