@@ -369,10 +369,10 @@ to switch-lights
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-207
-242
-733
-537
+159
+159
+685
+454
 -1
 -1
 12.0
@@ -413,10 +413,10 @@ NIL
 1
 
 BUTTON
-751
-368
-884
-401
+703
+285
+836
+318
 NIL
 add-from-east
 NIL
@@ -430,10 +430,10 @@ NIL
 1
 
 BUTTON
-399
-156
-536
-189
+351
+73
+488
+106
 NIL
 add-from-north
 NIL
@@ -447,10 +447,10 @@ NIL
 1
 
 BUTTON
-409
-550
-543
-583
+361
+467
+495
+500
 NIL
 add-from-south
 NIL
@@ -464,10 +464,10 @@ NIL
 1
 
 BUTTON
-65
-364
-191
-397
+17
+281
+143
+314
 NIL
 add-from-west
 NIL
@@ -532,10 +532,10 @@ NIL
 1
 
 SLIDER
-399
-196
-537
-229
+351
+113
+489
+146
 north-frequency
 north-frequency
 0
@@ -547,10 +547,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-750
-412
-885
-445
+702
+329
+837
+362
 east-frequency
 east-frequency
 0
@@ -562,10 +562,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-408
-593
-545
-626
+360
+510
+497
+543
 south-frequency
 south-frequency
 0
@@ -577,10 +577,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-64
-407
-193
-440
+16
+324
+145
+357
 west-frequency
 west-frequency
 0
@@ -592,10 +592,10 @@ NIL
 HORIZONTAL
 
 PLOT
-910
-84
-1434
-259
+854
+113
+1378
+288
 Turtles count
 NIL
 NIL
@@ -611,10 +611,10 @@ PENS
 "roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
 
 PLOT
-902
-306
-1435
-456
+855
+308
+1388
+458
 Turtles average time spent on road
 NIL
 NIL
