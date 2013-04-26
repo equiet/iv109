@@ -297,7 +297,10 @@ to go
   
   if first-tick-after-setup? [
     reset-ticks
+    set first-tick-after-setup? false
   ]
+
+  switch-lights-on-frequency
   
   tick
 end
@@ -358,6 +361,12 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Switch lights
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to switch-lights-on-frequency
+  if (ticks mod switch-lights-frequency) = 0 [
+    switch-lights
+  ]
+end
 
 to switch-lights
   ask patches with [
@@ -518,10 +527,10 @@ NIL
 1
 
 BUTTON
-290
 21
-402
-54
+73
+133
+106
 NIL
 switch-lights
 NIL
@@ -588,7 +597,7 @@ west-frequency
 west-frequency
 0
 50
-0
+10
 1
 1
 NIL
@@ -631,6 +640,21 @@ true
 PENS
 "lights-basic" 1.0 0 -11221820 true "" "plot mean [ticks-alive] of turtles-on world1"
 "roundabout" 1.0 0 -2674135 true "" "plot mean [ticks-alive] of turtles-on world2"
+
+SLIDER
+148
+73
+327
+106
+switch-lights-frequency
+switch-lights-frequency
+0
+100
+79
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
