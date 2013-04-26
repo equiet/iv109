@@ -299,6 +299,8 @@ to go
   if first-tick-after-setup? [
     reset-ticks
   ]
+
+  switch-lights-on-frequency
   
   tick
 end
@@ -359,6 +361,12 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Switch lights
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to switch-lights-on-frequency
+  if (ticks mod switch-lights-frequency) = 0 [
+    switch-lights
+  ]
+end
 
 to switch-lights
   ask patches with [
@@ -519,10 +527,10 @@ NIL
 1
 
 BUTTON
-290
 21
-402
-54
+73
+133
+106
 NIL
 switch-lights
 NIL
@@ -544,7 +552,7 @@ north-frequency
 north-frequency
 0
 50
-22
+10
 1
 1
 NIL
@@ -559,7 +567,7 @@ east-frequency
 east-frequency
 0
 50
-24
+10
 1
 1
 NIL
@@ -574,7 +582,7 @@ south-frequency
 south-frequency
 0
 50
-23
+10
 1
 1
 NIL
@@ -589,7 +597,7 @@ west-frequency
 west-frequency
 0
 50
-23
+10
 1
 1
 NIL
@@ -643,6 +651,21 @@ random-color-turtles?
 0
 1
 -1000
+
+SLIDER
+148
+73
+327
+106
+switch-lights-frequency
+switch-lights-frequency
+0
+100
+96
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
