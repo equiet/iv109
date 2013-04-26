@@ -266,15 +266,13 @@ to add-from-west
   car-factory "west"
 end
 
-to car-factory [ location ]
+to car-factory [ location ] 
+  let car-color (random 5) * 10 + 74 + random 4 
+  
   ask patches with [ spawn-location = location ] [
     sprout 1 [
       set chosen-direction "undecided"
-      ifelse random-color-turtles? [
-        set color random 100
-      ] [
-        set color 95
-      ]
+      set color car-color
       set size 1.7
     ]
   ]
@@ -544,7 +542,7 @@ north-frequency
 north-frequency
 0
 50
-22
+30
 1
 1
 NIL
@@ -559,7 +557,7 @@ east-frequency
 east-frequency
 0
 50
-24
+50
 1
 1
 NIL
@@ -574,7 +572,7 @@ south-frequency
 south-frequency
 0
 50
-23
+40
 1
 1
 NIL
@@ -589,7 +587,7 @@ west-frequency
 west-frequency
 0
 50
-23
+0
 1
 1
 NIL
@@ -632,17 +630,6 @@ true
 PENS
 "lights-basic" 1.0 0 -11221820 true "" "plot mean [ticks-alive] of turtles-on world1"
 "roundabout" 1.0 0 -2674135 true "" "plot mean [ticks-alive] of turtles-on world2"
-
-SWITCH
-427
-23
-601
-56
-random-color-turtles?
-random-color-turtles?
-0
-1
--1000
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -990,7 +977,62 @@ Polygon -7500403 true true 30 75 75 30 270 225 225 270
 NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
+1.0
+    org.nlogo.sdm.gui.AggregateDrawing 4
+        org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 174 143 60 40
+            org.nlogo.sdm.gui.WrappedStock "" "" 0
+        org.nlogo.sdm.gui.RateConnection 3 246 162 333 162 396 162 NULL NULL 0 0 0
+            org.jhotdraw.standard.ChopBoxConnector REF 1
+            org.jhotdraw.standard.ChopBoxConnector
+                org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 408 143 60 40
+                    org.nlogo.sdm.gui.WrappedStock "" "" 0
+            org.nlogo.sdm.gui.WrappedRate "" "" REF 2 REF 7 0
+        org.nlogo.sdm.gui.ReservoirFigure "attributes" "attributes" 1 "FillColor" "Color" 192 192 192 371 145 30 30  REF 6
 @#$#@#$#@
+<experiments>
+  <experiment name="experiment" repetitions="3" runMetricsEveryStep="true">
+    <setup>setup</setup>
+    <go>go</go>
+    <timeLimit steps="100"/>
+    <metric>count turtles-on world1</metric>
+    <metric>count turtles-on world2</metric>
+    <enumeratedValueSet variable="north-frequency">
+      <value value="0"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="west-frequency">
+      <value value="0"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="random-color-turtles?">
+      <value value="false"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="south-frequency">
+      <value value="0"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="east-frequency">
+      <value value="0"/>
+      <value value="10"/>
+      <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+    </enumeratedValueSet>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
