@@ -267,7 +267,7 @@ to add-from-west
 end
 
 to car-factory [ location orientation ] 
-  let car-color (random 5) * 10 + 74 + random 4 
+  let car-color (random 3) * 10 + 84 + (random 8) * 0.5 
   
   ask patches with [ spawn-location = location ] [
     sprout 1 [
