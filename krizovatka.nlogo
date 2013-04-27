@@ -5,6 +5,10 @@
 globals [
   world1
   world2
+  world3
+  world4
+  world-size-x
+  world-size-y
   first-tick-after-setup?
 ]
 
@@ -28,11 +32,20 @@ turtles-own [
 to setup
   clear-all
   
-  set world1 (make-world 0 0 21 21)
-  make-intersection-lights-basic 0 0 21 21
+  set world-size-x 21
+  set world-size-y 21
   
-  set world2 (make-world 21 0 21 21)
-  make-intersection-roundabout 21 0 21 21
+  set world1 (make-world 0 0)
+  make-intersection-lights-basic 0 0
+  
+  set world2 (make-world 21 0)
+  make-intersection-roundabout 21 0
+  
+  set world3 (make-world 42 0)
+  make-intersection-roundabout 42 0
+  
+  set world4 (make-world 63 0)
+  make-intersection-roundabout 63 0
   
   set first-tick-after-setup? true
 end
@@ -42,14 +55,14 @@ end
 ;; Create worlds
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to-report make-world [ offset-x offset-y width height ]
+to-report make-world [ offset-x offset-y ]
 
   let tmp (list)
 
-  let center-x (offset-x + (width - 1) / 2)
-  let center-y (offset-y + (height - 1) / 2)
-  let max-x (offset-x + width)
-  let max-y (offset-y + height)
+  let center-x (offset-x + (world-size-x - 1) / 2)
+  let center-y (offset-y + (world-size-y - 1) / 2)
+  let max-x (offset-x + world-size-x)
+  let max-y (offset-y + world-size-y)
   
   
   ;; 1. Get patches of current world
@@ -161,10 +174,10 @@ end
 ;; Create intersections
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to make-intersection-lights-basic [ offset-x offset-y width height ]
+to make-intersection-lights-basic [ offset-x offset-y ]
 
-  let center-x (offset-x + (width - 1) / 2)
-  let center-y (offset-y + (height - 1) / 2)
+  let center-x (offset-x + (world-size-x - 1) / 2)
+  let center-y (offset-y + (world-size-y - 1) / 2)
   
   change-light (center-x - 1) (center-y) true
   change-light (center-x + 1) (center-y - 1) false
@@ -181,12 +194,12 @@ to change-light [x y green?]
   ]
 end
 
-to make-intersection-roundabout [ offset-x offset-y width height ]
+to make-intersection-roundabout [ offset-x offset-y ]
 
   let tmp (list)
 
-  let center-x (offset-x + (width - 1) / 2)
-  let center-y (offset-y + (height - 1) / 2)
+  let center-x (offset-x + (world-size-x - 1) / 2)
+  let center-y (offset-y + (world-size-y - 1) / 2)
     
   
   ;; Center grass
@@ -383,7 +396,7 @@ end
 GRAPHICS-WINDOW
 159
 159
-685
+1189
 454
 -1
 -1
@@ -398,7 +411,7 @@ GRAPHICS-WINDOW
 1
 1
 0
-42
+84
 0
 21
 1
@@ -425,10 +438,10 @@ NIL
 1
 
 BUTTON
-703
-285
-836
-318
+1204
+277
+1337
+310
 NIL
 add-from-east
 NIL
@@ -442,10 +455,10 @@ NIL
 1
 
 BUTTON
-351
-73
-488
-106
+602
+70
+739
+103
 NIL
 add-from-north
 NIL
@@ -459,10 +472,10 @@ NIL
 1
 
 BUTTON
-361
-467
-495
-500
+611
+472
+745
+505
 NIL
 add-from-south
 NIL
@@ -544,10 +557,10 @@ NIL
 1
 
 SLIDER
-351
-113
-489
-146
+602
+110
+740
+143
 north-frequency
 north-frequency
 0
@@ -559,10 +572,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-702
-329
-837
-362
+1203
+321
+1338
+354
 east-frequency
 east-frequency
 0
@@ -574,10 +587,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-360
-510
-497
-543
+610
+515
+747
+548
 south-frequency
 south-frequency
 0
@@ -604,10 +617,10 @@ NIL
 HORIZONTAL
 
 PLOT
-854
-113
-1378
-288
+172
+583
+675
+757
 Turtles count
 NIL
 NIL
@@ -623,10 +636,10 @@ PENS
 "roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
 
 PLOT
-855
-308
-1388
-458
+684
+583
+1188
+757
 Turtles average time spent on road
 NIL
 NIL
@@ -650,7 +663,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-53
+16
 1
 1
 NIL
