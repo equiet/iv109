@@ -21,6 +21,7 @@ patches-own [
 
 turtles-own [
   ticks-alive
+  previous-turn
 ]
 
 
@@ -287,6 +288,7 @@ to car-factory [ location orientation ]
       set heading orientation
       set color car-color
       set size 1.5
+      set previous-turn -1
     ]
   ]
 end
@@ -318,22 +320,32 @@ to move-turtles
   
     ;; Get turn choices
     let turn-choices (list)
-    if can-go-north? [ set turn-choices (lput "north" turn-choices) ]
-    if can-go-south? [ set turn-choices (lput "south" turn-choices) ]
-    if can-go-east? [ set turn-choices (lput "east" turn-choices) ]
-    if can-go-west? [ set turn-choices (lput "west" turn-choices) ]
+    if can-go-north? [ set turn-choices (lput 0 turn-choices) ]
+    if can-go-south? [ set turn-choices (lput 180 turn-choices) ]
+    if can-go-east? [ set turn-choices (lput 90 turn-choices) ]
+    if can-go-west? [ set turn-choices (lput 270 turn-choices) ]
+    
+    ;; Prevent double turn to left/right
+    if (previous-turn = 90 or previous-turn = 270) [
+      let invalid-turn ((heading + previous-turn) mod 360)
+      set turn-choices (remove invalid-turn turn-choices)
+    ]
     
     ;; Die if no turn options
     if (length turn-choices = 0) [ die ]
     
+    ;; Save current heading
+    let previous-heading heading
+    
     ;; Make random turn
     if (chosen-direction = "undecided") [
       set chosen-direction (item (random (length turn-choices)) turn-choices)
-      if (chosen-direction = "north") [ set heading 0 ]
-      if (chosen-direction = "south") [ set heading 180 ]
-      if (chosen-direction = "east") [ set heading 90 ]
-      if (chosen-direction = "west") [ set heading 270 ]
+      set heading chosen-direction
     ]
+    
+    ;; To which side did turtle turn? (90 - turn right, 270 - turn left)
+    let current-turn ((heading - previous-heading) mod 360)
+    set previous-turn current-turn
     
     ;; Move at this speed
     let speed 1
@@ -559,7 +571,7 @@ north-frequency
 north-frequency
 0
 50
-19
+20
 1
 1
 NIL
@@ -574,7 +586,7 @@ east-frequency
 east-frequency
 0
 50
-21
+10
 1
 1
 NIL
@@ -589,7 +601,7 @@ south-frequency
 south-frequency
 0
 50
-20
+15
 1
 1
 NIL
@@ -604,7 +616,7 @@ west-frequency
 west-frequency
 0
 50
-10
+11
 1
 1
 NIL
@@ -657,7 +669,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-16
+31
 1
 1
 NIL
