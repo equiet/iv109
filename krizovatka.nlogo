@@ -9,7 +9,6 @@ globals [
   world4
   world-size-x
   world-size-y
-  first-tick-after-setup?
 ]
 
 patches-own [
@@ -47,7 +46,7 @@ to setup
   set world4 (make-world 63 0)
   make-intersection-roundabout 63 0
   
-  set first-tick-after-setup? true
+  reset-ticks
 end
 
 
@@ -307,11 +306,6 @@ end
 to go
   add-cars-on-frequency
   move-turtles
-  
-  if first-tick-after-setup? [
-    reset-ticks
-    set first-tick-after-setup? false
-  ]
 
   switch-lights-on-frequency
   
