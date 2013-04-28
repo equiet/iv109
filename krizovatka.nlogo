@@ -37,7 +37,7 @@ to setup
   set world-size-y 21
   
   set world1 (make-world 0 0)
-  make-intersection-basic 0 0
+  make-intersection-priority 0 0
   
   set world2 (make-world 21 0)
   make-intersection-interval-lights 21 0
@@ -176,7 +176,7 @@ end
 ;; Create intersections
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to make-intersection-basic [ offset-x offset-y ]
+to make-intersection-priority [ offset-x offset-y ]
 
   let tmp (list)
   
@@ -191,18 +191,26 @@ to make-intersection-basic [ offset-x offset-y ]
     and (pycor > (center-y - 3) and pycor < (center-y + 4))
   ]
  
-  set tmp (current-world with [ pxcor = center-x ])
+  set tmp patches with [ (pxcor > center-x - 3) and (pxcor <= center-x) and (pycor = center-y) ]
   make-road tmp 2
   
-  set tmp (current-world with [ pxcor = center-x + 1])
+  set tmp patches with [ (pxcor > center-x) and (pxcor <= center-x + 3) and (pycor = center-y + 1) ]
   make-road tmp 2
 
 end
 
 to make-intersection-interval-lights [ offset-x offset-y ]
 
+  let tmp (list)
+  
   let center-x (offset-x + (world-size-x - 1) / 2)
   let center-y (offset-y + (world-size-y - 1) / 2)
+  
+  set tmp patches with [
+    (pxcor = center-x or pxcor = center-x + 1)
+    and (pycor = center-y or pycor = center-y + 1)
+  ]
+  make-road tmp 2
   
   change-light (center-x - 1) (center-y) true
   change-light (center-x + 1) (center-y - 1) false
@@ -335,16 +343,18 @@ end
 
 to go
   add-cars-on-frequency
-  move-turtles
+  
+  move-turtles (turtles-on patches with [ priority = 2 ])
+  move-turtles (turtles-on patches with [ priority = 1 ])
 
   switch-lights-on-frequency
   
   tick
 end
 
-to move-turtles
+to move-turtles [ turtle-list ]
 
-  ask turtles [
+  ask turtle-list [
   
     ;; Get turn choices
     let turn-choices (list)
@@ -599,7 +609,7 @@ north-frequency
 north-frequency
 0
 50
-18
+24
 1
 1
 NIL
@@ -614,7 +624,7 @@ east-frequency
 east-frequency
 0
 50
-10
+17
 1
 1
 NIL
@@ -629,7 +639,7 @@ south-frequency
 south-frequency
 0
 50
-10
+22
 1
 1
 NIL
@@ -644,7 +654,7 @@ west-frequency
 west-frequency
 0
 50
-27
+20
 1
 1
 NIL
@@ -685,8 +695,10 @@ true
 true
 "" ""
 PENS
-"lights-basic" 1.0 0 -11221820 true "" "if (count turtles-on world1 > 0 ) [ plot mean [ticks-alive] of turtles-on world1 ]"
-"roundabout" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [ticks-alive] of turtles-on world2 ]"
+"priority" 1.0 0 -11221820 true "" "if (count turtles-on world1 > 0 ) [ plot mean [ticks-alive] of turtles-on world1 ]"
+"interval-lights" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [ticks-alive] of turtles-on world2 ]"
+"adaptive-lights" 1.0 0 -13840069 true "" "if (count turtles-on world3 > 0 ) [ plot mean [ticks-alive] of turtles-on world3 ]"
+"roundabout" 1.0 0 -817084 true "" "if (count turtles-on world4 > 0 ) [ plot mean [ticks-alive] of turtles-on world4 ]"
 
 SLIDER
 148
@@ -697,7 +709,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-8
+26
 1
 1
 NIL
