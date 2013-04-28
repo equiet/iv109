@@ -17,6 +17,7 @@ patches-own [
   can-go? ;; Is green light?
   can-go-north? can-go-south? can-go-east? can-go-west?
   chosen-direction
+  priority
 ]
 
 turtles-own [
@@ -36,13 +37,13 @@ to setup
   set world-size-y 21
   
   set world1 (make-world 0 0)
-  make-intersection-lights-basic 0 0
+  make-intersection-basic 0 0
   
   set world2 (make-world 21 0)
-  make-intersection-roundabout 21 0
+  make-intersection-interval-lights 21 0
   
   set world3 (make-world 42 0)
-  make-intersection-roundabout 42 0
+  make-intersection-adaptive-lights 42 0
   
   set world4 (make-world 63 0)
   make-intersection-roundabout 63 0
@@ -78,19 +79,19 @@ to-report make-world [ offset-x offset-y ]
   
   ;; 3. Make roads
   set tmp (current-world with [ pxcor = center-x ])
-  make-road tmp
+  make-road tmp 1
   set-direction-south tmp true
   
   set tmp (current-world with [ pxcor = center-x + 1])
-  make-road tmp
+  make-road tmp 1
   set-direction-north tmp true
   
   set tmp (current-world with [ pycor = center-y ])
-  make-road tmp
+  make-road tmp 1
   set-direction-east tmp true
   
   set tmp (current-world with [ pycor = center-y + 1 ])
-  make-road tmp
+  make-road tmp 1
   set-direction-west tmp true
   
   
@@ -138,10 +139,11 @@ to make-grass [ fields ]
   ]
 end
 
-to make-road [ fields ]
+to make-road [ fields priority-value ]
   ask fields [
     set patch-type "road"
-    set pcolor 1
+    set pcolor priority-value
+    set priority priority-value
   ]
 end
 
@@ -174,7 +176,30 @@ end
 ;; Create intersections
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to make-intersection-lights-basic [ offset-x offset-y ]
+to make-intersection-basic [ offset-x offset-y ]
+
+  let tmp (list)
+  
+  let center-x (offset-x + (world-size-x - 1) / 2)
+  let center-y (offset-y + (world-size-y - 1) / 2)
+  
+  let max-x (offset-x + world-size-x)
+  let max-y (offset-y + world-size-y)
+  
+  let current-world patches with [
+    (pxcor > (center-x - 3) and pxcor < (center-x + 4))
+    and (pycor > (center-y - 3) and pycor < (center-y + 4))
+  ]
+ 
+  set tmp (current-world with [ pxcor = center-x ])
+  make-road tmp 2
+  
+  set tmp (current-world with [ pxcor = center-x + 1])
+  make-road tmp 2
+
+end
+
+to make-intersection-interval-lights [ offset-x offset-y ]
 
   let center-x (offset-x + (world-size-x - 1) / 2)
   let center-y (offset-y + (world-size-y - 1) / 2)
@@ -192,6 +217,9 @@ to change-light [x y green?]
     ifelse (green?) [ set pcolor 65 ] [ set pcolor 15 ]
     set can-go? green?
   ]
+end
+
+to make-intersection-adaptive-lights [ offset-x offset-y ]
 end
 
 to make-intersection-roundabout [ offset-x offset-y ]
@@ -215,7 +243,7 @@ to make-intersection-roundabout [ offset-x offset-y ]
      (pxcor >= (center-x - 1) and pxcor < (center-x + 2))
      and (pycor = (center-y - 1))
   ]
-  make-road tmp
+  make-road tmp 2
   set-direction-east tmp true
   
   set tmp (tmp with [ pxcor = center-x + 1 ])
@@ -227,7 +255,7 @@ to make-intersection-roundabout [ offset-x offset-y ]
      (pxcor > (center-x - 1) and pxcor <= (center-x + 2))
      and (pycor = (center-y + 2))
   ]
-  make-road tmp
+  make-road tmp 2
   set-direction-west tmp true
   
   set tmp (tmp with [ pxcor = center-x ])
@@ -239,7 +267,7 @@ to make-intersection-roundabout [ offset-x offset-y ]
      (pxcor = (center-x - 1))
      and (pycor > (center-y - 1) and pycor <= (center-y + 2))
   ]
-  make-road tmp
+  make-road tmp 2
   set-direction-south tmp true
   
   set tmp (tmp with [ pycor = center-y ])
@@ -251,7 +279,7 @@ to make-intersection-roundabout [ offset-x offset-y ]
      (pxcor = (center-x + 2))
      and (pycor >= (center-y - 1) and pycor < (center-y + 2))
   ]
-  make-road tmp
+  make-road tmp 2
   set-direction-north tmp true
   
   set tmp (tmp with [ pycor = center-y + 1 ])
@@ -571,7 +599,7 @@ north-frequency
 north-frequency
 0
 50
-20
+18
 1
 1
 NIL
@@ -601,7 +629,7 @@ south-frequency
 south-frequency
 0
 50
-15
+10
 1
 1
 NIL
@@ -616,7 +644,7 @@ west-frequency
 west-frequency
 0
 50
-11
+27
 1
 1
 NIL
@@ -669,7 +697,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-31
+8
 1
 1
 NIL
