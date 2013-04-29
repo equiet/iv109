@@ -23,6 +23,7 @@ patches-own [
 turtles-own [
   ticks-alive
   previous-turn
+  speed
 ]
 
 
@@ -325,6 +326,7 @@ to car-factory [ location orientation ]
       set color car-color
       set size 1.5
       set previous-turn -1
+      set speed 1
     ]
   ]
 end
@@ -386,19 +388,24 @@ to move-turtles [ turtle-list ]
     set previous-turn current-turn
     
     ;; Move at this speed
-    let speed 1
-    
-    ;; Stop if on red light
-    ask patch-here [
-      if (patch-type = "intersection" and (not can-go?)) [
-        set speed 0
-      ]
-    ]
+    ;;let speed 1
     
     ;; Stop if turtle ahead
-    if (any? turtles-on patch-ahead 1) [
+    ifelse (any? turtles-on patch-ahead 1) [
       set speed 0
+    ] [
+      set speed (speed + acceleration)
+      if speed > 1 [ set speed 1 ]
     ]
+    
+    ;; Stop if on red light
+    let tmp speed
+    ask patch-here [
+      if (patch-type = "intersection" and (not can-go?)) [
+        set tmp 0
+      ]
+    ]
+    set speed tmp
     
     ;; Move
     if (speed > 0) [
@@ -438,10 +445,10 @@ to switch-lights
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-159
-159
-1189
-454
+170
+151
+1200
+446
 -1
 -1
 12.0
@@ -482,10 +489,10 @@ NIL
 1
 
 BUTTON
-1204
-277
-1337
-310
+1215
+269
+1348
+302
 NIL
 add-from-east
 NIL
@@ -499,10 +506,10 @@ NIL
 1
 
 BUTTON
-602
-70
-739
-103
+613
+62
+750
+95
 NIL
 add-from-north
 NIL
@@ -516,10 +523,10 @@ NIL
 1
 
 BUTTON
-611
-472
-745
-505
+622
+464
+756
+497
 NIL
 add-from-south
 NIL
@@ -533,10 +540,10 @@ NIL
 1
 
 BUTTON
-17
-281
-143
-314
+28
+273
+154
+306
 NIL
 add-from-west
 NIL
@@ -584,10 +591,10 @@ NIL
 1
 
 BUTTON
+289
 21
-73
-133
-106
+401
+54
 NIL
 switch-lights
 NIL
@@ -601,10 +608,10 @@ NIL
 1
 
 SLIDER
-602
-110
-740
-143
+613
+102
+751
+135
 north-frequency
 north-frequency
 0
@@ -616,45 +623,45 @@ NIL
 HORIZONTAL
 
 SLIDER
-1203
-321
-1338
-354
+1214
+313
+1349
+346
 east-frequency
 east-frequency
 0
 50
-17
+31
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-610
-515
-747
-548
+621
+508
+758
+541
 south-frequency
 south-frequency
 0
 50
-22
+8
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-16
-324
-145
-357
+27
+316
+156
+349
 west-frequency
 west-frequency
 0
 50
-20
+7
 1
 1
 NIL
@@ -701,16 +708,31 @@ PENS
 "roundabout" 1.0 0 -817084 true "" "if (count turtles-on world4 > 0 ) [ plot mean [ticks-alive] of turtles-on world4 ]"
 
 SLIDER
-148
-73
-327
-106
+19
+67
+198
+100
 switch-lights-frequency
 switch-lights-frequency
 0
 100
 26
 1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+210
+68
+382
+101
+acceleration
+acceleration
+0
+1
+0.07
+0.01
 1
 NIL
 HORIZONTAL
