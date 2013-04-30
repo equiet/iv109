@@ -668,10 +668,10 @@ NIL
 HORIZONTAL
 
 PLOT
-172
-583
-484
-757
+158
+584
+470
+758
 Turtles count
 NIL
 NIL
@@ -683,8 +683,10 @@ true
 true
 "" ""
 PENS
-"lights-basic" 1.0 0 -11221820 true "" "plot count turtles-on world1"
-"roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
+"priority" 1.0 0 -11221820 true "" "plot count turtles-on world1"
+"interval-lights" 1.0 0 -2674135 true "" "plot count turtles-on world2"
+"adaptive-lights" 1.0 0 -13840069 true "" "plot count turtles-on world3"
+"roundabout" 1.0 0 -955883 true "" "plot count turtles-on world4"
 
 PLOT
 489
@@ -738,9 +740,9 @@ NIL
 HORIZONTAL
 
 PLOT
-844
+845
 581
-1197
+1198
 759
 Average speed
 NIL
@@ -754,9 +756,9 @@ true
 "" ""
 PENS
 "priority" 1.0 0 -11221820 true "" "if (count turtles-on world1 > 0 ) [ plot mean [speed] of turtles-on world1 ]"
-"pen-1" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [speed] of turtles-on world2 ]"
-"pen-2" 1.0 0 -13840069 true "" "if (count turtles-on world3 > 0 ) [ plot mean [speed] of turtles-on world3 ]"
-"pen-3" 1.0 0 -955883 true "" "if (count turtles-on world4 > 0 ) [ plot mean [speed] of turtles-on world4 ]"
+"interval-lights" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [speed] of turtles-on world2 ]"
+"adaptive-lights" 1.0 0 -13840069 true "" "if (count turtles-on world3 > 0 ) [ plot mean [speed] of turtles-on world3 ]"
+"roundabout" 1.0 0 -955883 true "" "if (count turtles-on world4 > 0 ) [ plot mean [speed] of turtles-on world4 ]"
 
 @#$#@#$#@
 ## WHAT IS IT?
@@ -1104,16 +1106,16 @@ Polygon -7500403 true true 30 75 75 30 270 225 225 270
 NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
-1.0
-    org.nlogo.sdm.gui.AggregateDrawing 4
-        org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 174 143 60 40
-            org.nlogo.sdm.gui.WrappedStock "" "" 0
-        org.nlogo.sdm.gui.RateConnection 3 246 162 321 162 396 162 NULL NULL 0 0 0
-            org.jhotdraw.standard.ChopBoxConnector REF 1
-            org.jhotdraw.standard.ChopBoxConnector
-                org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 408 143 60 40
-                    org.nlogo.sdm.gui.WrappedStock "" "" 0
-            org.nlogo.sdm.gui.WrappedRate "" "" REF 2 REF 7 0
+1.0 
+    org.nlogo.sdm.gui.AggregateDrawing 4 
+        org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 174 143 60 40 
+            org.nlogo.sdm.gui.WrappedStock "" "" 0   
+        org.nlogo.sdm.gui.RateConnection 3 246 162 321 162 396 162 NULL NULL 0 0 0 
+            org.jhotdraw.standard.ChopBoxConnector REF 1  
+            org.jhotdraw.standard.ChopBoxConnector 
+                org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 408 143 60 40 
+                    org.nlogo.sdm.gui.WrappedStock "" "" 0    
+            org.nlogo.sdm.gui.WrappedRate "" "" REF 2 REF 7 0   
         org.nlogo.sdm.gui.ReservoirFigure "attributes" "attributes" 1 "FillColor" "Color" 192 192 192 371 145 30 30  REF 6
 @#$#@#$#@
 <experiments>
