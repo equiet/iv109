@@ -15,8 +15,7 @@ patches-own [
   patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn"
   spawn-location ;; For spawns, can be points of compass
   can-go? ;; Is green light?
-  can-go-north? can-go-south? can-go-east? can-go-west?
-  chosen-direction
+  heading-options
   priority
 ]
 
@@ -24,7 +23,9 @@ turtles-own [
   ticks-alive
   previous-turn
   speed
-  moved?
+  decided
+  ;; moved?
+  chosen-direction
 ]
 
 
@@ -82,19 +83,19 @@ to-report make-world [ offset-x offset-y ]
   ;; 3. Make roads
   set tmp (current-world with [ pxcor = center-x ])
   make-road tmp 1
-  set-direction-south tmp true
+  add-heading tmp [0 -1] ;; South
   
   set tmp (current-world with [ pxcor = center-x + 1])
   make-road tmp 1
-  set-direction-north tmp true
+  add-heading tmp [0 1] ;; North
   
   set tmp (current-world with [ pycor = center-y ])
   make-road tmp 1
-  set-direction-east tmp true
+  add-heading tmp [1 0] ;; East
   
   set tmp (current-world with [ pycor = center-y + 1 ])
   make-road tmp 1
-  set-direction-west tmp true
+  add-heading tmp [-1 0] ;; West
   
   
   ;; 4. Make border
@@ -134,10 +135,7 @@ to make-grass [ fields ]
   ask fields [
     set patch-type "grass"
     set pcolor 56
-    set can-go-north? false
-    set can-go-south? false
-    set can-go-east? false
-    set can-go-west? false
+    set heading-options (list)
   ]
 end
 
@@ -153,24 +151,19 @@ to make-border [ fields ]
   ask fields [
     set patch-type "border"
     set pcolor 3
-    set can-go-north? false
-    set can-go-south? false
-    set can-go-east? false
-    set can-go-west? false
+    set heading-options (list)
   ]
 end
 
-to set-direction-north [ fields value ]
-  ask fields [ set can-go-north? value ]
+to add-heading [ fields value ]
+  ask fields [
+    set heading-options ( lput value heading-options )
+    set heading-options ( remove-duplicates heading-options )
+   ]
 end
-to set-direction-south [ fields value ]
-  ask fields [ set can-go-south? value ]
-end
-to set-direction-east [ fields value ]
-  ask fields [ set can-go-east? value ]
-end
-to set-direction-west [ fields value ]
-  ask fields [ set can-go-west? value ]
+
+to remove-heading [ fields value ]
+  ask fields [ set heading-options ( remove value heading-options ) ]
 end
 
 
@@ -254,10 +247,10 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor = (center-y - 1))
   ]
   make-road tmp 2
-  set-direction-east tmp true
+  add-heading tmp [1 0]
   
   set tmp (tmp with [ pxcor = center-x + 1 ])
-  set-direction-north tmp false
+  remove-heading tmp [0 1]
   
   
   ;; Top road
@@ -266,10 +259,10 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor = (center-y + 2))
   ]
   make-road tmp 2
-  set-direction-west tmp true
+  add-heading tmp [-1 0]
   
   set tmp (tmp with [ pxcor = center-x ])
-  set-direction-south tmp false
+  remove-heading tmp [0 -1]
   
   
   ;; Left road
@@ -278,10 +271,10 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor > (center-y - 1) and pycor <= (center-y + 2))
   ]
   make-road tmp 2
-  set-direction-south tmp true
+  add-heading tmp [0 -1]
   
   set tmp (tmp with [ pycor = center-y ])
-  set-direction-east tmp false
+  remove-heading tmp [1 0]
   
   
   ;; Right road
@@ -290,10 +283,10 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor >= (center-y - 1) and pycor < (center-y + 2))
   ]
   make-road tmp 2
-  set-direction-north tmp true
+  add-heading tmp [0 1]
   
   set tmp (tmp with [ pycor = center-y + 1 ])
-  set-direction-west tmp false
+  remove-heading tmp [-1 0]
   
 end
 
@@ -347,9 +340,10 @@ end
 to go
   add-cars-on-frequency
   
-  ask turtles [ set moved? false ]
-  move-turtles (turtles-on patches with [ priority = 2 ])
-  move-turtles (turtles-on patches with [ priority = 1 ])
+  ;;ask turtles [ set moved? false ]
+  ;;move-turtles (turtles-on patches with [ priority = 2 ])
+  ;;move-turtles (turtles-on patches with [ priority = 1 ])
+  move-turtles turtles ;; TODO zjednodusit ak netreba prioritu
 
   switch-lights-on-frequency
   
@@ -358,36 +352,22 @@ end
 
 to move-turtles [ turtle-list ]
 
-  ask turtle-list [ if not moved? [
+  ask turtle-list [
   
     ;; Get turn choices
-    let turn-choices (list)
-    if can-go-north? [ set turn-choices (lput 0 turn-choices) ]
-    if can-go-south? [ set turn-choices (lput 180 turn-choices) ]
-    if can-go-east? [ set turn-choices (lput 90 turn-choices) ]
-    if can-go-west? [ set turn-choices (lput 270 turn-choices) ]
+    let turn-options heading-options
     
-    ;; Prevent double turn to left/right
-    if (previous-turn = 90 or previous-turn = 270) [
-      let invalid-turn ((heading + previous-turn) mod 360)
-      set turn-choices (remove invalid-turn turn-choices)
-    ]
+    ;; TODO Prevent changing direction by more than 90 deg
     
     ;; Die if no turn options
-    if (length turn-choices = 0) [ die ]
-    
-    ;; Save current heading
-    let previous-heading heading
+    if (length turn-options = 0) [ die ]
     
     ;; Make random turn
-    if (chosen-direction = "undecided") [
-      set chosen-direction (item (random (length turn-choices)) turn-choices)
-      set heading chosen-direction
+    if (not (is-boolean? decided and decided)) [
+      let random-heading (item (random (length turn-options)) turn-options)
+      facexy (xcor + item 0 random-heading) (ycor + item 1 random-heading)
+      set decided true
     ]
-    
-    ;; To which side did turtle turn? (90 - turn right, 270 - turn left)
-    let current-turn ((heading - previous-heading) mod 360)
-    set previous-turn current-turn
     
     ;; Move at this speed
     ;;let speed 1
@@ -400,7 +380,7 @@ to move-turtles [ turtle-list ]
       if speed > 1 [ set speed 1 ]
     ]
     
-    ;; Daj prednost v jazde (translate THIS)
+    ;; Yield right of way
     let count-priority 0
     ask patch-ahead 1 [
       set count-priority ( count turtles-on neighbors4 with [ priority = 2 ] )
@@ -422,14 +402,13 @@ to move-turtles [ turtle-list ]
     ;; Move
     if (speed > 0) [
       forward speed
-      set chosen-direction "undecided"
+      set decided false
     ]
-    
-    
+     
     ;; Increment how long turtle is alive
     set ticks-alive ticks-alive + 1
     
-  ] set moved? true ]
+  ]
   
 end
 
@@ -628,7 +607,7 @@ north-frequency
 north-frequency
 0
 50
-13
+11
 1
 1
 NIL
@@ -643,7 +622,7 @@ east-frequency
 east-frequency
 0
 50
-10
+11
 1
 1
 NIL
@@ -658,7 +637,7 @@ south-frequency
 south-frequency
 0
 50
-15
+8
 1
 1
 NIL
@@ -673,7 +652,7 @@ west-frequency
 west-frequency
 0
 50
-17
+9
 1
 1
 NIL
@@ -745,7 +724,7 @@ acceleration
 acceleration
 0
 1
-0.03
+1
 0.01
 1
 NIL
@@ -1118,17 +1097,6 @@ Polygon -7500403 true true 30 75 75 30 270 225 225 270
 NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
-1.0 
-    org.nlogo.sdm.gui.AggregateDrawing 4 
-        org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 174 143 60 40 
-            org.nlogo.sdm.gui.WrappedStock "" "" 0   
-        org.nlogo.sdm.gui.RateConnection 3 246 162 321 162 396 162 NULL NULL 0 0 0 
-            org.jhotdraw.standard.ChopBoxConnector REF 1  
-            org.jhotdraw.standard.ChopBoxConnector 
-                org.nlogo.sdm.gui.StockFigure "attributes" "attributes" 1 "FillColor" "Color" 225 225 182 408 143 60 40 
-                    org.nlogo.sdm.gui.WrappedStock "" "" 0    
-            org.nlogo.sdm.gui.WrappedRate "" "" REF 2 REF 7 0   
-        org.nlogo.sdm.gui.ReservoirFigure "attributes" "attributes" 1 "FillColor" "Color" 192 192 192 371 145 30 30  REF 6
 @#$#@#$#@
 <experiments>
   <experiment name="experiment" repetitions="3" runMetricsEveryStep="true">
