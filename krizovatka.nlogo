@@ -616,7 +616,7 @@ north-frequency
 north-frequency
 0
 50
-24
+11
 1
 1
 NIL
@@ -631,7 +631,7 @@ east-frequency
 east-frequency
 0
 50
-31
+24
 1
 1
 NIL
@@ -646,7 +646,7 @@ south-frequency
 south-frequency
 0
 50
-8
+12
 1
 1
 NIL
@@ -661,7 +661,7 @@ west-frequency
 west-frequency
 0
 50
-7
+13
 1
 1
 NIL
@@ -670,7 +670,7 @@ HORIZONTAL
 PLOT
 172
 583
-675
+484
 757
 Turtles count
 NIL
@@ -687,10 +687,10 @@ PENS
 "roundabout" 1.0 0 -2674135 true "" "plot count turtles-on world2"
 
 PLOT
-684
-583
-1188
-757
+489
+584
+832
+758
 Turtles average time spent on road
 NIL
 NIL
@@ -716,7 +716,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-26
+100
 1
 1
 NIL
@@ -731,11 +731,32 @@ acceleration
 acceleration
 0
 1
-0.07
+0.14
 0.01
 1
 NIL
 HORIZONTAL
+
+PLOT
+844
+581
+1197
+759
+Average speed
+NIL
+NIL
+0.0
+1.0
+0.0
+1.0
+true
+true
+"" ""
+PENS
+"priority" 1.0 0 -11221820 true "" "if (count turtles-on world1 > 0 ) [ plot mean [speed] of turtles-on world1 ]"
+"pen-1" 1.0 0 -2674135 true "" "if (count turtles-on world2 > 0 ) [ plot mean [speed] of turtles-on world2 ]"
+"pen-2" 1.0 0 -13840069 true "" "if (count turtles-on world3 > 0 ) [ plot mean [speed] of turtles-on world3 ]"
+"pen-3" 1.0 0 -955883 true "" "if (count turtles-on world4 > 0 ) [ plot mean [speed] of turtles-on world4 ]"
 
 @#$#@#$#@
 ## WHAT IS IT?
