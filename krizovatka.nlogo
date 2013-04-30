@@ -24,6 +24,7 @@ turtles-own [
   ticks-alive
   previous-turn
   speed
+  moved?
 ]
 
 
@@ -346,6 +347,7 @@ end
 to go
   add-cars-on-frequency
   
+  ask turtles [ set moved? false ]
   move-turtles (turtles-on patches with [ priority = 2 ])
   move-turtles (turtles-on patches with [ priority = 1 ])
 
@@ -356,7 +358,7 @@ end
 
 to move-turtles [ turtle-list ]
 
-  ask turtle-list [
+  ask turtle-list [ if not moved? [
   
     ;; Get turn choices
     let turn-choices (list)
@@ -398,6 +400,16 @@ to move-turtles [ turtle-list ]
       if speed > 1 [ set speed 1 ]
     ]
     
+    ;; Daj prednost v jazde (translate THIS)
+    let count-priority 0
+    ask patch-ahead 1 [
+      set count-priority ( count turtles-on neighbors4 with [ priority = 2 ] )
+    ]
+    ask patch-here [
+      if priority = 2 [ set count-priority 0 ]
+    ]
+    if count-priority > 0 [ set speed 0 ]   
+    
     ;; Stop if on red light
     let tmp speed
     ask patch-here [
@@ -417,7 +429,7 @@ to move-turtles [ turtle-list ]
     ;; Increment how long turtle is alive
     set ticks-alive ticks-alive + 1
     
-  ]
+  ] set moved? true ]
   
 end
 
@@ -616,7 +628,7 @@ north-frequency
 north-frequency
 0
 50
-11
+13
 1
 1
 NIL
@@ -631,7 +643,7 @@ east-frequency
 east-frequency
 0
 50
-24
+10
 1
 1
 NIL
@@ -646,7 +658,7 @@ south-frequency
 south-frequency
 0
 50
-12
+15
 1
 1
 NIL
@@ -661,7 +673,7 @@ west-frequency
 west-frequency
 0
 50
-13
+17
 1
 1
 NIL
@@ -718,7 +730,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-100
+80
 1
 1
 NIL
@@ -733,7 +745,7 @@ acceleration
 acceleration
 0
 1
-0.14
+0.03
 0.01
 1
 NIL
