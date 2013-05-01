@@ -26,6 +26,7 @@ turtles-own [
   decided
   ;; moved?
   chosen-direction
+  target-x target-y
 ]
 
 
@@ -191,6 +192,37 @@ to make-intersection-priority [ offset-x offset-y ]
   
   set tmp patches with [ (pxcor > center-x) and (pxcor <= center-x + 3) and (pycor = center-y + 1) ]
   make-road tmp 2
+  
+  
+  ;; Turn options
+  set tmp ( patch-set
+    patch (center-x + 1) (center-y - 1)
+    patch (center-x) (center-y)
+    patch (center-x + 2) (center-y + 1)
+  )
+  add-heading tmp [-1 1]
+  
+  set tmp ( patch-set
+    patch (center-x - 1) (center-y)
+    patch (center-x) (center-y + 1)
+    patch (center-x + 1) (center-y - 1)
+  )
+  add-heading tmp [1 1]
+  
+  set tmp ( patch-set
+    patch (center-x) (center-y + 2)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x - 1) (center-y)
+  )
+  add-heading tmp [1 -1]
+  
+  set tmp ( patch-set
+    patch (center-x + 2) (center-y + 1)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x + 2) (center-y)
+  )
+  add-heading tmp [-1 -1]
+  
 
 end
 
@@ -211,6 +243,35 @@ to make-intersection-interval-lights [ offset-x offset-y ]
   change-light (center-x + 1) (center-y - 1) false
   change-light (center-x + 2) (center-y + 1) true
   change-light (center-x) (center-y + 2) false
+  
+  ;; Turn options
+  set tmp ( patch-set
+    patch (center-x + 1) (center-y - 1)
+    patch (center-x) (center-y)
+    patch (center-x + 2) (center-y + 1)
+  )
+  add-heading tmp [-1 1]
+  
+  set tmp ( patch-set
+    patch (center-x - 1) (center-y)
+    patch (center-x) (center-y + 1)
+    patch (center-x + 1) (center-y - 1)
+  )
+  add-heading tmp [1 1]
+  
+  set tmp ( patch-set
+    patch (center-x) (center-y + 2)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x - 1) (center-y)
+  )
+  add-heading tmp [1 -1]
+  
+  set tmp ( patch-set
+    patch (center-x + 2) (center-y + 1)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x + 2) (center-y)
+  )
+  add-heading tmp [-1 -1]
   
 end
 
@@ -247,9 +308,9 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor = (center-y - 1))
   ]
   make-road tmp 2
-  add-heading tmp [1 0]
   
-  set tmp (tmp with [ pxcor = center-x + 1 ])
+  set tmp (tmp with [ pxcor = center-x + 1 or pxcor = center-x ])
+  add-heading tmp [1 0]
   remove-heading tmp [0 1]
   
   
@@ -259,9 +320,9 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor = (center-y + 2))
   ]
   make-road tmp 2
-  add-heading tmp [-1 0]
   
-  set tmp (tmp with [ pxcor = center-x ])
+  set tmp (tmp with [ pxcor = center-x or pxcor = center-x + 1 ])
+  add-heading tmp [-1 0]
   remove-heading tmp [0 -1]
   
   
@@ -271,9 +332,9 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor > (center-y - 1) and pycor <= (center-y + 2))
   ]
   make-road tmp 2
-  add-heading tmp [0 -1]
   
-  set tmp (tmp with [ pycor = center-y ])
+  set tmp (tmp with [ pycor = center-y or pycor = center-y + 1 ])
+  add-heading tmp [0 -1]
   remove-heading tmp [1 0]
   
   
@@ -283,10 +344,40 @@ to make-intersection-roundabout [ offset-x offset-y ]
      and (pycor >= (center-y - 1) and pycor < (center-y + 2))
   ]
   make-road tmp 2
-  add-heading tmp [0 1]
   
-  set tmp (tmp with [ pycor = center-y + 1 ])
+  set tmp (tmp with [ pycor = center-y + 1 or pycor = center-y  ])
+  add-heading tmp [0 1]
   remove-heading tmp [-1 0]
+  
+  
+  ;; Turn options
+  set tmp ( patch-set
+    patch (center-x + 3) (center-y + 1)
+    patch (center-x + 2) (center-y + 2)
+    patch (center-x + 2) (center-y + 1)
+  )
+  add-heading tmp [-1 1]
+  
+  set tmp ( patch-set
+    patch (center-x + 1) (center-y - 2)
+    patch (center-x + 1) (center-y - 1)
+    patch (center-x + 2) (center-y - 1)
+  )
+  add-heading tmp [1 1]
+  
+  set tmp ( patch-set
+    patch (center-x - 2) (center-y)
+    patch (center-x - 1) (center-y)
+    patch (center-x - 1) (center-y - 1)
+  )
+  add-heading tmp [1 -1]
+  
+  set tmp ( patch-set
+    patch (center-x) (center-y + 3)
+    patch (center-x) (center-y + 2)
+    patch (center-x - 1) (center-y + 2)
+  )
+  add-heading tmp [-1 -1]
   
 end
 
@@ -341,8 +432,8 @@ to go
   add-cars-on-frequency
   
   ;;ask turtles [ set moved? false ]
-  ;;move-turtles (turtles-on patches with [ priority = 2 ])
-  ;;move-turtles (turtles-on patches with [ priority = 1 ])
+  ;move-turtles (turtles-on patches with [ priority = 2 ])
+  ;move-turtles (turtles-on patches with [ priority = 1 ])
   move-turtles turtles ;; TODO zjednodusit ak netreba prioritu
 
   switch-lights-on-frequency
@@ -353,55 +444,59 @@ end
 to move-turtles [ turtle-list ]
 
   ask turtle-list [
-  
-    ;; Get turn choices
-    let turn-options heading-options
-    
-    ;; TODO Prevent changing direction by more than 90 deg
-    
-    ;; Die if no turn options
-    if (length turn-options = 0) [ die ]
     
     ;; Make random turn
-    if (not (is-boolean? decided and decided)) [
+    if (not (is-boolean? decided and decided)) [   
+  
+      ;; Get turn choices
+      let turn-options heading-options
+    
+      ;; Prevent changing direction by more than 90 deg
+      if heading >= 90 and heading <= 270 [ set turn-options ( remove [ 0 1 ] turn-options ) ]
+      if heading >= 270 or heading <= 90 [ set turn-options ( remove [ 0 -1 ] turn-options ) ]
+      if heading >= 180 and heading <= 360 or heading = 0 [ set turn-options ( remove [ 1 0 ] turn-options ) ]
+      if heading >= 0 and heading <= 180 [ set turn-options ( remove [ -1 0 ] turn-options ) ]
+      
+      if heading >= 135 and heading <= 315 [ set turn-options ( remove [ 1 1 ] turn-options ) ]
+      if heading >= 225 or heading <= 45 [ set turn-options ( remove [ 1 -1 ] turn-options ) ]
+      if heading >= 45 and heading <= 225 [ set turn-options ( remove [ -1 1 ] turn-options ) ]
+      if heading >= 315 or heading <= 135 [ set turn-options ( remove [ -1 -1 ] turn-options ) ]
+    
+      ;; Die if no turn options
+      if (length turn-options = 0) [ die ]
+    
+      ;; Turn
       let random-heading (item (random (length turn-options)) turn-options)
-      facexy (xcor + item 0 random-heading) (ycor + item 1 random-heading)
+      set target-x (xcor + item 0 random-heading)
+      set target-y (ycor + item 1 random-heading)
+      facexy target-x target-y
       set decided true
+      
     ]
     
-    ;; Move at this speed
-    ;;let speed 1
-    
-    ;; Stop if turtle ahead
-    ifelse (any? turtles-on patch-ahead 1) [
-      set speed 0
-    ] [
-      set speed (speed + acceleration)
-      if speed > 1 [ set speed 1 ]
-    ]
+    let go? true
     
     ;; Yield right of way
-    let count-priority 0
-    ask patch-ahead 1 [
-      set count-priority ( count turtles-on neighbors4 with [ priority = 2 ] )
-    ]
+    let local-target-x target-x
+    let local-target-y target-y
+    let count-priority count turtles with [ target-x = local-target-x and target-y = local-target-y and priority = 2 ]
     ask patch-here [
       if priority = 2 [ set count-priority 0 ]
     ]
-    if count-priority > 0 [ set speed 0 ]   
+    if count-priority > 0 [ set go? false ] 
+    
+    ;; Stop if turtle ahead
+    if (any? turtles-on patch target-x target-y) [ set go? false ]
     
     ;; Stop if on red light
-    let tmp speed
     ask patch-here [
-      if (patch-type = "intersection" and (not can-go?)) [
-        set tmp 0
-      ]
-    ]
-    set speed tmp
+      if (patch-type = "intersection" and (not can-go?)) [ set go? false ]
+    ]  
     
     ;; Move
-    if (speed > 0) [
-      forward speed
+    if go? [
+      set xcor target-x
+      set ycor target-y
       set decided false
     ]
      
@@ -607,7 +702,7 @@ north-frequency
 north-frequency
 0
 50
-11
+25
 1
 1
 NIL
@@ -622,7 +717,7 @@ east-frequency
 east-frequency
 0
 50
-11
+19
 1
 1
 NIL
@@ -637,7 +732,7 @@ south-frequency
 south-frequency
 0
 50
-8
+33
 1
 1
 NIL
@@ -652,7 +747,7 @@ west-frequency
 west-frequency
 0
 50
-9
+30
 1
 1
 NIL
@@ -709,7 +804,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-80
+29
 1
 1
 NIL
