@@ -1,3 +1,8 @@
+; Najdolezitejsie otazky o zmysle zivota
+; - roundabout je vzdy lepsi ako semafory (aj ked v realnom svete nemusi byt, lebo spomaluje vsetky pruhy)
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -284,6 +289,52 @@ to change-light [x y green?]
 end
 
 to make-intersection-adaptive-lights [ offset-x offset-y ]
+
+  let tmp (list)
+  
+  let center-x (offset-x + (world-size-x - 1) / 2)
+  let center-y (offset-y + (world-size-y - 1) / 2)
+  
+  set tmp patches with [
+    (pxcor = center-x or pxcor = center-x + 1)
+    and (pycor = center-y or pycor = center-y + 1)
+  ]
+  make-road tmp 2
+  
+  change-light (center-x - 1) (center-y) true
+  change-light (center-x + 1) (center-y - 1) false
+  change-light (center-x + 2) (center-y + 1) true
+  change-light (center-x) (center-y + 2) false
+  
+  ;; Turn options
+  set tmp ( patch-set
+    patch (center-x + 1) (center-y - 1)
+    patch (center-x) (center-y)
+    patch (center-x + 2) (center-y + 1)
+  )
+  add-heading tmp [-1 1]
+  
+  set tmp ( patch-set
+    patch (center-x - 1) (center-y)
+    patch (center-x) (center-y + 1)
+    patch (center-x + 1) (center-y - 1)
+  )
+  add-heading tmp [1 1]
+  
+  set tmp ( patch-set
+    patch (center-x) (center-y + 2)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x - 1) (center-y)
+  )
+  add-heading tmp [1 -1]
+  
+  set tmp ( patch-set
+    patch (center-x + 2) (center-y + 1)
+    patch (center-x + 1) (center-y + 1)
+    patch (center-x + 2) (center-y)
+  )
+  add-heading tmp [-1 -1]
+  
 end
 
 to make-intersection-roundabout [ offset-x offset-y ]
@@ -514,12 +565,12 @@ end
 
 to switch-lights-on-frequency
   if (ticks mod switch-lights-frequency) = 0 [
-    switch-lights
+    switch-world2-lights
   ]
 end
 
-to switch-lights
-  ask patches with [
+to switch-world2-lights
+  ask world2 with [
     patch-type = "intersection"
   ] [
     ifelse (can-go?) [
@@ -527,6 +578,12 @@ to switch-lights
     ] [
       change-light pxcor pycor true
     ]
+  ]
+end
+
+to detect-cars-waiting
+  if (ticks mod switch-lights-frequency) = 0 [
+    ;switch-world3-lights
   ]
 end
 @#$#@#$#@
@@ -679,10 +736,10 @@ NIL
 BUTTON
 289
 21
-401
+451
 54
 NIL
-switch-lights
+switch-world2-lights
 NIL
 1
 T
@@ -717,7 +774,7 @@ east-frequency
 east-frequency
 0
 50
-19
+25
 1
 1
 NIL
@@ -732,7 +789,7 @@ south-frequency
 south-frequency
 0
 50
-33
+50
 1
 1
 NIL
@@ -747,7 +804,7 @@ west-frequency
 west-frequency
 0
 50
-30
+25
 1
 1
 NIL
@@ -804,7 +861,7 @@ switch-lights-frequency
 switch-lights-frequency
 0
 100
-29
+47
 1
 1
 NIL
@@ -819,7 +876,7 @@ acceleration
 acceleration
 0
 1
-1
+0.02
 0.01
 1
 NIL
