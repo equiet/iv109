@@ -9,6 +9,8 @@ globals [
   world4
   world-size-x
   world-size-y
+  
+  high-priority-color low-priority-color
 ]
 
 patches-own [
@@ -22,11 +24,11 @@ patches-own [
 
 turtles-own [
   ticks-alive
-  previous-turn
+  ;previous-turn
   speed
-  decided
-  chosen-direction
-  target-x target-y
+  ;decided
+  ;chosen-direction
+  ; target-x target-y
 ]
 
 
@@ -36,6 +38,9 @@ turtles-own [
 
 to startup
   clear-all
+  
+  set high-priority-color black
+  set low-priority-color 5
   
   make-world
   
@@ -72,7 +77,7 @@ to make-world
     while [ i < 360 ] [
      setxy (center-xcor + round(radius * sin i)) (center-ycor + (radius * cos i))
      ask patch-here [
-       set pcolor black
+       set pcolor high-priority-color
        let next-x (center-xcor + round(radius * sin (i - 1)))
        let next-y (center-ycor + round(radius * cos (i - 1)))
        set next-patch ( lput (patch next-x next-y) next-patch )
@@ -115,13 +120,13 @@ to draw-road [start-x start-y move-x move-y]
       ask patch-here [
      
         ; Stop drawing at roundabout
-        if ( pcolor = black ) [
+        if ( priority = 2 ) [
           set draw? (not draw?)
         ]
        
         if ( draw? ) [
           if ( priority = 0 ) [
-            set pcolor gray
+            set pcolor low-priority-color
             set priority 1
           ]
           set next-patch (lput (patch-at move-x move-y) next-patch)
@@ -169,15 +174,12 @@ to add-from-west
 end
 
 to car-factory [ location orientation ] 
-  let car-color (random 3) * 10 + 84 + (random 8) * 0.5 
   
   ask patches with [ spawn-location = location ] [
     sprout 1 [
-      set chosen-direction "undecided"
+      ;set chosen-direction "undecided"
       set heading orientation
-      set color car-color
-      set size 4
-      set previous-turn -1
+      set size 3.5
       set speed 3
     ]
   ]
@@ -196,7 +198,16 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to go
-  add-cars-on-frequency
+  
+  ; Reset allocated color
+  ask patches with [ allocated? ] [
+    set allocated? false
+    ;if ( priority = 2 ) [ set pcolor high-priority-color ]
+    ;if ( priority = 1 ) [ set pcolor low-priority-color ]
+  ]
+  
+  ; Add cars
+  add-cars-on-frequency 
   
   ; Kill turtles outside roads
   ask (turtles-on patches with [ priority = 0 ]) [ die ]
@@ -207,13 +218,16 @@ to go
   move-turtles priority2
   move-turtles priority1
   
-  ; Colorize
+  ; Colorize turtles by speed
   ask turtles with [ speed > 4 ] [ set color 55 ]
   ask turtles with [ speed < 4 ] [ set color 44 ]
   ask turtles with [ speed = 1 ] [ set color 25 ]
   ask turtles with [ speed = 0 ] [ set color 15 ]
   
-  ask patches with [ allocated? ] [ set allocated? false ]
+  ; Highlight allocated space
+  ;ask patches with [ allocated? ] [
+  ;  set pcolor 14
+  ;]
   
   tick
 end
@@ -266,7 +280,8 @@ to move-turtles [ turtle-list ]
   ; 1. Increase speed by acceleration
   ask turtle-list [
     set speed (speed + acceleration)
-    set speed (min (list max-speed speed))
+    if ( priority = 1 ) [ set speed (min list road-speed speed) ]
+    if ( priority = 2 ) [ set speed (min list roundabout-speed speed) ]
   ]
   
   ; 2. Slow down to nearest obstacle and allocate more patches
@@ -285,7 +300,7 @@ to move-turtles [ turtle-list ]
     facexy ([pxcor] of target-patch) ([pycor] of target-patch)
     setxy ([pxcor] of target-patch) ([pycor] of target-patch)
   ]
-  
+
 end
 
 
@@ -355,10 +370,10 @@ NIL
 1
 
 BUTTON
-209
-21
-272
-54
+200
+20
+263
+53
 NIL
 go
 T
@@ -451,11 +466,11 @@ SLIDER
 67
 1106
 100
-max-speed
-max-speed
+road-speed
+road-speed
 0
 10
-5
+9
 1
 1
 NIL
@@ -463,9 +478,9 @@ HORIZONTAL
 
 SLIDER
 938
-130
+202
 1110
-163
+235
 radius
 radius
 1
@@ -478,9 +493,9 @@ HORIZONTAL
 
 SLIDER
 938
-181
+253
 1110
-214
+286
 lane-gap
 lane-gap
 1
@@ -493,14 +508,29 @@ HORIZONTAL
 
 SLIDER
 942
-235
+307
 1114
-268
+340
 allocate-factor
 allocate-factor
 1
 10
 1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+936
+119
+1109
+152
+roundabout-speed
+roundabout-speed
+1
+10
+2
 1
 1
 NIL
