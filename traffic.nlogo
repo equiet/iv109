@@ -25,7 +25,6 @@ turtles-own [
   previous-turn
   speed
   decided
-  moved?
   chosen-direction
   target-x target-y
 ]
@@ -54,6 +53,7 @@ to make-world
   ask patches [
     set next-patch (list)
     set allocated? false
+    set priority 0
   ]
 
   ; Create useful constants
@@ -114,21 +114,20 @@ to draw-road [start-x start-y move-x move-y]
     
       ask patch-here [
      
-        ; Stop and resume drawing at roundabout
-        ifelse ( pcolor = black and not draw? ) [
-          set draw? true
-        ] [
-          if ( pcolor = black and draw? ) [ set draw? false ]
+        ; Stop drawing at roundabout
+        if ( pcolor = black ) [
+          set draw? (not draw?)
         ]
        
         if ( draw? ) [
-          set pcolor gray
-          set priority 1
-          let next-x (pxcor + move-x)
-          let next-y (pycor + move-y)
-          set next-patch (lput (patch (pxcor + move-x) (pycor + move-y)) next-patch)
+          if ( priority = 0 ) [
+            set pcolor gray
+            set priority 1
+          ]
+          set next-patch (lput (patch-at move-x move-y) next-patch)
           set next-patch (remove-duplicates next-patch)
         ]
+        
       ]
       
       set i (i + 1)  
@@ -203,9 +202,10 @@ to go
   ask (turtles-on patches with [ priority = 0 ]) [ die ]
   
   ; Move it move it
-  ask turtles [ set moved? false ]
-  move-turtles (turtles-on patches with [ priority = 2 ])
-  move-turtles (turtles-on patches with [ priority = 1 ])
+  let priority2 (turtles-on patches with [ priority = 2 ])
+  let priority1 (turtles-on patches with [ priority = 1 ])
+  move-turtles priority2
+  move-turtles priority1
   
   ; Colorize
   ask turtles with [ speed > 4 ] [ set color 55 ]
@@ -232,15 +232,13 @@ to-report move-ahead [ start-patch limit ]
 end
 
 to-report get-obstacle-distance [ origin max-length ]
-
+  
   if (max-length = 0) [ report 0 ]
   if (empty? [next-patch] of origin) [ report 1 ] ; Don't stop before exit
 
   let options (list)
     
-  foreach [next-patch] of origin [ 
-    set allocated? true
-  
+  foreach [next-patch] of origin [  
     ifelse (any? turtles-on ?1) or ([allocated?] of ?1) [
       set options (lput 0 options)
     ] [
@@ -253,6 +251,16 @@ to-report get-obstacle-distance [ origin max-length ]
   
 end
 
+to allocate-patches [ origin max-length ]
+  if (max-length != 0) and (not any? other turtles-on origin) and (not [allocated?] of origin) [
+    foreach [next-patch] of origin [
+      allocate-patches ?1 (max-length - 1)
+    ]
+  ]
+  ask origin [ set allocated? true ]
+end
+
+
 to move-turtles [ turtle-list ]
 
   ; 1. Increase speed by acceleration
@@ -261,11 +269,12 @@ to move-turtles [ turtle-list ]
     set speed (min (list max-speed speed))
   ]
   
-  ; 2. Slow down and allocate fields
+  ; 2. Slow down to nearest obstacle and allocate more patches
   ask turtle-list [
     let nearest-obstacle (get-obstacle-distance patch-here speed)
     set speed nearest-obstacle
-  ]  
+    allocate-patches patch-here (speed * allocate-factor)
+  ]
   
   ; 3. No random speed variations
   ; noop
@@ -276,38 +285,6 @@ to move-turtles [ turtle-list ]
     facexy ([pxcor] of target-patch) ([pycor] of target-patch)
     setxy ([pxcor] of target-patch) ([pycor] of target-patch)
   ]
-    
-  ;  let go? true
-    
-    
-      ;; Yield right of way
-  ;    let local-target-x target-x
-  ;    let local-target-y target-y
-  ;    let count-priority count turtles with [ target-x = local-target-x and target-y = local-target-y and priority = 2 ]
-  ;    ask patch-here [
-  ;      if priority = 2 [ set count-priority 0 ]
-  ;    ]
-  ;    if count-priority > 0 [ set go? false ] 
-    
-      ;; Stop if turtle ahead
-  ;    if (any? turtles-on patch target-x target-y) [ set go? false ]
-    
-      ;; Stop if on red light
-  ;    ask patch-here [
-  ;      if (patch-type = "intersection" and (not can-go?)) [ set go? false ]
-  ;    ] 
-    
-    ;; Move
-  ;  if go? [
-  ;    facexy target-x target-y
-  ;    setxy target-x target-y
-  ;    set decided false
-  ;  ]
-     
-    ;; Increment how long turtle is alive
-   ; set ticks-alive ticks-alive + 1
-    
-  ;]
   
 end
 
@@ -403,7 +380,7 @@ north-frequency
 north-frequency
 0
 50
-0
+25
 1
 1
 NIL
@@ -418,7 +395,7 @@ south-frequency
 south-frequency
 0
 50
-31
+23
 1
 1
 NIL
@@ -433,7 +410,7 @@ west-frequency
 west-frequency
 0
 50
-19
+25
 1
 1
 NIL
@@ -463,7 +440,7 @@ east-frequency
 east-frequency
 0
 50
-0
+25
 1
 1
 NIL
@@ -508,7 +485,22 @@ lane-gap
 lane-gap
 1
 10
-4
+5
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+942
+235
+1114
+268
+allocate-factor
+allocate-factor
+1
+10
+1
 1
 1
 NIL
