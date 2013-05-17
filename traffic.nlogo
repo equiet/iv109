@@ -202,9 +202,16 @@ to go
   ; Kill turtles outside roads
   ask (turtles-on patches with [ priority = 0 ]) [ die ]
   
+  ; Move it move it
   ask turtles [ set moved? false ]
   move-turtles (turtles-on patches with [ priority = 2 ])
   move-turtles (turtles-on patches with [ priority = 1 ])
+  
+  ; Colorize
+  ask turtles with [ speed > 4 ] [ set color 55 ]
+  ask turtles with [ speed < 4 ] [ set color 44 ]
+  ask turtles with [ speed = 1 ] [ set color 25 ]
+  ask turtles with [ speed = 0 ] [ set color 15 ]
   
   ask patches with [ allocated? ] [ set allocated? false ]
   
@@ -426,7 +433,7 @@ west-frequency
 west-frequency
 0
 50
-50
+19
 1
 1
 NIL
@@ -471,7 +478,7 @@ max-speed
 max-speed
 0
 10
-4
+5
 1
 1
 NIL
