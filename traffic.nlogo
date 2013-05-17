@@ -15,9 +15,9 @@ patches-own [
   patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn"
   spawn-location ;; For spawns, can be points of compass
   can-go? ;; Is green light?
-  heading-options
   priority
   next-patch
+  allocated?
 ]
 
 turtles-own [
@@ -25,7 +25,7 @@ turtles-own [
   previous-turn
   speed
   decided
-  ;; moved?
+  moved?
   chosen-direction
   target-x target-y
 ]
@@ -35,7 +35,7 @@ turtles-own [
 ;; Setup procedures
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-to setup
+to startup
   clear-all
   
   make-world
@@ -53,31 +53,19 @@ to make-world
   ; Set defaults for patches
   ask patches [
     set next-patch (list)
+    set allocated? false
   ]
 
   ; Create useful constants
   let center-xcor round(world-width / 2)
   let center-ycor round(world-height / 2)
-  
-  let radius 20
-  let lane-gap 3
 
   ; 1. Color all patches white
   ask patches [
     set pcolor white
   ]
   
-  ; 2. Create border 
-  ask patches with [
-    (pxcor = 0 or pxcor = max-pxcor)
-    or (pycor = 0 or pycor = max-pycor)
-  ] [
-    set patch-type "border"
-    set pcolor 3
-    set heading-options (list)
-  ]
-  
-  ; 3. Draw roundabout
+  ; 2. Draw roundabout
   let i 0
   create-turtles 1 [
     
@@ -85,45 +73,32 @@ to make-world
      setxy (center-xcor + round(radius * sin i)) (center-ycor + (radius * cos i))
      ask patch-here [
        set pcolor black
-       let next-x (center-xcor + round(radius * sin (i + 1)))
-       let next-y (center-ycor + round(radius * cos (i + 1)))
-       set next-patch ( lput (list next-x next-y) next-patch )
+       let next-x (center-xcor + round(radius * sin (i - 1)))
+       let next-y (center-ycor + round(radius * cos (i - 1)))
+       set next-patch ( lput (patch next-x next-y) next-patch )
        set next-patch ( remove-duplicates next-patch )
+       set next-patch ( remove (patch pxcor pycor) next-patch )
+       set priority 2
      ]
-     set i (i + 3)
+     set i (i + 1)
     ]
     
     die
   ]
   
-  ; 4. Draw roads
-  draw-road 0 (center-ycor - lane-gap) 1 0 ; West-east
-  draw-road world-width (center-ycor + lane-gap) -1 0 ; East-west
-  draw-road (center-xcor - lane-gap) world-height 0 -1 ; Nort-south
-  draw-road (center-xcor + lane-gap) 0 0 1 ; South-north
-    
-   
+  ; 4. Draw roads with spawns
+  draw-road 0 (center-ycor - lane-gap) 1 0
+  make-spawn 0 (center-ycor - lane-gap) "west"
+  
+  draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
+  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"
+  
+  draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
+  make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
+  
+  draw-road (center-xcor + lane-gap) 0 0 1
+  make-spawn (center-xcor + lane-gap) 0 "south"
 
-  ;; 5. Make spawn areas
-  ask patch (center-xcor + lane-gap) (max-pxcor + 1) [
-    set patch-type "spawn"
-    set spawn-location "south"
-  ]
-  ask patch (max-pxcor - 1) (center-ycor + lane-gap) [
-    set patch-type "spawn"
-    set spawn-location "east"
-  ]
-  ask patch (center-xcor - lane-gap) (1) [
-    set patch-type "spawn"
-    set spawn-location "north"
-  ]
-  ask patch (1) (center-ycor - lane-gap) [
-    set patch-type "spawn"
-    set spawn-location "west"
-  ]
-  ask patches with [ patch-type = "spawn" ] [
-    set pcolor 44
-  ]
   
 end
 
@@ -131,11 +106,11 @@ end
 to draw-road [start-x start-y move-x move-y]
   let i 0
   let draw? true
+  
   create-turtles 1 [
     setxy start-x start-y
     
-    while [ i < max-pxcor ] [
-      setxy (xcor + move-x) (ycor + move-y)
+    while [ i < max-pxcor - 2 ] [
     
       ask patch-here [
      
@@ -148,24 +123,28 @@ to draw-road [start-x start-y move-x move-y]
        
         if ( draw? ) [
           set pcolor gray
+          set priority 1
           let next-x (pxcor + move-x)
           let next-y (pycor + move-y)
-          set next-patch (lput (list (pxcor + move-x) (pycor + move-y)) next-patch)
+          set next-patch (lput (patch (pxcor + move-x) (pycor + move-y)) next-patch)
           set next-patch (remove-duplicates next-patch)
         ]
       ]
-      set i (i + 1)
+      
+      set i (i + 1)  
+      setxy (xcor + move-x) (ycor + move-y)
     ]
     
     die
   ]
+  
 end
 
-to make-border [ fields ]
-  ask fields [
-    set patch-type "border"
-    set pcolor 3
-    set heading-options (list)
+to make-spawn [ loc-x loc-y name ]
+  ask patch loc-x loc-y [
+    set patch-type "spawn"
+    set spawn-location name
+    set pcolor 44
   ]
 end
 
@@ -198,9 +177,9 @@ to car-factory [ location orientation ]
       set chosen-direction "undecided"
       set heading orientation
       set color car-color
-      set size 1.5
+      set size 4
       set previous-turn -1
-      set speed 1
+      set speed 3
     ]
   ]
 end
@@ -220,67 +199,108 @@ end
 to go
   add-cars-on-frequency
   
-  ;;ask turtles [ set moved? false ]
-  ;move-turtles (turtles-on patches with [ priority = 2 ])
-  ;move-turtles (turtles-on patches with [ priority = 1 ])
-  move-turtles turtles ;; TODO zjednodusit ak netreba prioritu
+  ; Kill turtles outside roads
+  ask (turtles-on patches with [ priority = 0 ]) [ die ]
+  
+  ask turtles [ set moved? false ]
+  move-turtles (turtles-on patches with [ priority = 2 ])
+  move-turtles (turtles-on patches with [ priority = 1 ])
+  
+  ask patches with [ allocated? ] [ set allocated? false ]
   
   tick
 end
 
+to-report move-ahead [ start-patch limit ]
+
+  if (limit = 0) [ report start-patch ]
+
+  ifelse ( not empty? ([next-patch] of start-patch) ) [
+    let random-patch (item 0 (shuffle ([next-patch] of start-patch)))
+    report (move-ahead random-patch (limit - 1))
+  ] [
+    report start-patch
+  ]
+      
+end
+
+to-report get-obstacle-distance [ origin max-length ]
+
+  if (max-length = 0) [ report 0 ]
+  if (empty? [next-patch] of origin) [ report 1 ] ; Don't stop before exit
+
+  let options (list)
+    
+  foreach [next-patch] of origin [ 
+    set allocated? true
+  
+    ifelse (any? turtles-on ?1) or ([allocated?] of ?1) [
+      set options (lput 0 options)
+    ] [
+      let next (get-obstacle-distance ?1 (max-length - 1))
+      set options (lput (1 + next) options)
+    ]  
+  ]
+  
+  report min options
+  
+end
+
 to move-turtles [ turtle-list ]
 
+  ; 1. Increase speed by acceleration
   ask turtle-list [
-    
-    ;; Make random turn
-    if (not (is-boolean? decided and decided)) [   
+    set speed (speed + acceleration)
+    set speed (min (list max-speed speed))
+  ]
   
-      ;; Get turn choices
-      let turn-options heading-options
+  ; 2. Slow down and allocate fields
+  ask turtle-list [
+    let nearest-obstacle (get-obstacle-distance patch-here speed)
+    set speed nearest-obstacle
+  ]  
+  
+  ; 3. No random speed variations
+  ; noop
+  
+  ; 4. Move turtles
+  ask turtle-list [
+    let target-patch (move-ahead patch-here speed)
+    facexy ([pxcor] of target-patch) ([pycor] of target-patch)
+    setxy ([pxcor] of target-patch) ([pycor] of target-patch)
+  ]
+    
+  ;  let go? true
     
     
-      ;; Die if no turn options
-      if (length turn-options = 0) [ die ]
+      ;; Yield right of way
+  ;    let local-target-x target-x
+  ;    let local-target-y target-y
+  ;    let count-priority count turtles with [ target-x = local-target-x and target-y = local-target-y and priority = 2 ]
+  ;    ask patch-here [
+  ;      if priority = 2 [ set count-priority 0 ]
+  ;    ]
+  ;    if count-priority > 0 [ set go? false ] 
     
-      ;; Turn
-      let random-heading (item (random (length turn-options)) turn-options)
-      set target-x (xcor + item 0 random-heading)
-      set target-y (ycor + item 1 random-heading)
-      facexy target-x target-y
-      set decided true
-      
-    ]
+      ;; Stop if turtle ahead
+  ;    if (any? turtles-on patch target-x target-y) [ set go? false ]
     
-    let go? true
-    
-    ;; Yield right of way
-    let local-target-x target-x
-    let local-target-y target-y
-    let count-priority count turtles with [ target-x = local-target-x and target-y = local-target-y and priority = 2 ]
-    ask patch-here [
-      if priority = 2 [ set count-priority 0 ]
-    ]
-    if count-priority > 0 [ set go? false ] 
-    
-    ;; Stop if turtle ahead
-    if (any? turtles-on patch target-x target-y) [ set go? false ]
-    
-    ;; Stop if on red light
-    ask patch-here [
-      if (patch-type = "intersection" and (not can-go?)) [ set go? false ]
-    ]  
+      ;; Stop if on red light
+  ;    ask patch-here [
+  ;      if (patch-type = "intersection" and (not can-go?)) [ set go? false ]
+  ;    ] 
     
     ;; Move
-    if go? [
-      set xcor target-x
-      set ycor target-y
-      set decided false
-    ]
+  ;  if go? [
+  ;    facexy target-x target-y
+  ;    setxy target-x target-y
+  ;    set decided false
+  ;  ]
      
     ;; Increment how long turtle is alive
-    set ticks-alive ticks-alive + 1
+   ; set ticks-alive ticks-alive + 1
     
-  ]
+  ;]
   
 end
 
@@ -288,21 +308,15 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Switch lights
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-to detect-cars-waiting
-  if (ticks mod switch-lights-frequency) = 0 [
-    ;switch-world3-lights
-  ]
-end
 @#$#@#$#@
 GRAPHICS-WINDOW
 88
 138
-824
-895
+703
+774
 -1
 -1
-6.0
+5.0
 1
 6
 1
@@ -325,10 +339,10 @@ ticks
 BUTTON
 19
 20
-85
+96
 53
 NIL
-setup
+startup
 NIL
 1
 T
@@ -374,90 +388,120 @@ NIL
 1
 
 SLIDER
-375
-87
-540
-120
+324
+90
+489
+123
 north-frequency
 north-frequency
 0
 50
-25
+0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-853
-316
-886
-466
+305
+793
+477
+826
 south-frequency
 south-frequency
 0
 50
-21
-1
-1
-NIL
-VERTICAL
-
-SLIDER
 31
-320
-64
-470
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+29
+450
+62
+600
 west-frequency
 west-frequency
 0
 50
-25
+50
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-465
+937
 20
-644
+1109
 53
-switch-lights-frequency
-switch-lights-frequency
-0
-100
-47
+acceleration
+acceleration
+1
+5
+1
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-656
+748
+377
+785
+527
+east-frequency
+east-frequency
+0
+50
+0
+1
+1
+NIL
+VERTICAL
+
+SLIDER
+934
+67
+1106
+100
+max-speed
+max-speed
+0
+10
+4
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+938
+130
+1110
+163
+radius
+radius
+1
+30
 21
-828
-54
-acceleration
-acceleration
-0
 1
-0.02
-0.01
 1
 NIL
 HORIZONTAL
 
 SLIDER
-367
-916
-539
-949
-east-frequency
-east-frequency
-0
-100
-29
+938
+181
+1110
+214
+lane-gap
+lane-gap
+1
+10
+4
 1
 1
 NIL
