@@ -273,8 +273,8 @@ to make-intersection-interval-lights [ offset-x offset-y ]
   
   set tmp ( patch-set
     patch (center-x + 2) (center-y + 1)
-    patch (center-x + 1) (center-y + 1)
-    patch (center-x + 2) (center-y)
+    patch (center-x + 1) (center-y)
+    patch (center-x) (center-y + 2)
   )
   add-heading tmp [-1 -1]
   
@@ -759,7 +759,7 @@ north-frequency
 north-frequency
 0
 50
-25
+10
 1
 1
 NIL
@@ -774,7 +774,7 @@ east-frequency
 east-frequency
 0
 50
-25
+10
 1
 1
 NIL
@@ -789,7 +789,7 @@ south-frequency
 south-frequency
 0
 50
-50
+10
 1
 1
 NIL
@@ -804,7 +804,7 @@ west-frequency
 west-frequency
 0
 50
-25
+6
 1
 1
 NIL
@@ -859,9 +859,9 @@ SLIDER
 100
 switch-lights-frequency
 switch-lights-frequency
-0
+1
 100
-47
+33
 1
 1
 NIL
