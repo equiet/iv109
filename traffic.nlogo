@@ -26,6 +26,7 @@ turtles-own [
   ticks-alive
   ;previous-turn
   speed
+  origin
   ;decided
   ;chosen-direction
   ; target-x target-y
@@ -70,7 +71,28 @@ to make-world
     set pcolor white
   ]
   
-  ; 2. Draw roundabout
+  ; 2. Draw intersection
+  if ( intersection = "roundabout" ) [ draw-roundabout center-xcor center-ycor ]
+  if ( intersection = "adaptive lights" ) [ draw-adaptive center-xcor center-ycor ]
+  
+  ; 4. Draw roads with spawns
+  draw-road 0 (center-ycor - lane-gap) 1 0
+  make-spawn 0 (center-ycor - lane-gap) "west"
+  
+  draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
+  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"
+  
+  draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
+  make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
+  
+  draw-road (center-xcor + lane-gap) 0 0 1
+  make-spawn (center-xcor + lane-gap) 0 "south"
+
+  
+end
+
+
+to draw-roundabout [ center-xcor center-ycor ]
   let i 0
   create-turtles 1 [
     
@@ -90,23 +112,11 @@ to make-world
     
     die
   ]
-  
-  ; 4. Draw roads with spawns
-  draw-road 0 (center-ycor - lane-gap) 1 0
-  make-spawn 0 (center-ycor - lane-gap) "west"
-  
-  draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
-  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"
-  
-  draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
-  make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
-  
-  draw-road (center-xcor + lane-gap) 0 0 1
-  make-spawn (center-xcor + lane-gap) 0 "south"
-
-  
 end
 
+to draw-adaptive [ center-xcor center-ycor ]
+
+end
 
 to draw-road [start-x start-y move-x move-y]
   let i 0
@@ -115,16 +125,19 @@ to draw-road [start-x start-y move-x move-y]
   create-turtles 1 [
     setxy start-x start-y
     
+    let section 1
+    
     while [ i < max-pxcor - 2 ] [
     
       ask patch-here [
      
         ; Stop drawing at roundabout
-        if ( priority = 2 ) [
-          set draw? (not draw?)
-        ]
+        if ( section = 1 and pcolor = black ) [ set section 2 ] ; Crossing 1
+        if ( section = 2 and pcolor = white ) [ set section 3 ] ; Middle
+        if ( section = 3 and pcolor = black ) [ set section 4 ] ; Crossing 2
+        ;if ( section = 4 and pcolor = white ) [ set section 5 ] ; End
        
-        if ( draw? ) [
+        if ( section = 1 or section = 4 ) [
           if ( priority = 0 ) [
             set pcolor low-priority-color
             set priority 1
@@ -177,6 +190,7 @@ to car-factory [ location orientation ]
   
   ask patches with [ spawn-location = location ] [
     sprout 1 [
+      set origin location
       ;set chosen-direction "undecided"
       set heading orientation
       set size 3.5
@@ -204,6 +218,11 @@ to go
     set allocated? false
     ;if ( priority = 2 ) [ set pcolor high-priority-color ]
     ;if ( priority = 1 ) [ set pcolor low-priority-color ]
+  ]
+  
+  ; Update ticks-alive
+  ask turtles [
+    set ticks-alive (ticks-alive + 1)
   ]
   
   ; Add cars
@@ -245,14 +264,14 @@ to-report move-ahead [ start-patch limit ]
       
 end
 
-to-report get-obstacle-distance [ origin max-length ]
+to-report get-obstacle-distance [ current max-length ]
   
   if (max-length = 0) [ report 0 ]
-  if (empty? [next-patch] of origin) [ report 1 ] ; Don't stop before exit
+  if (empty? [next-patch] of current) [ report 1 ] ; Don't stop before exit
 
   let options (list)
     
-  foreach [next-patch] of origin [  
+  foreach [next-patch] of current [  
     ifelse (any? turtles-on ?1) or ([allocated?] of ?1) [
       set options (lput 0 options)
     ] [
@@ -265,13 +284,13 @@ to-report get-obstacle-distance [ origin max-length ]
   
 end
 
-to allocate-patches [ origin max-length ]
-  if (max-length != 0) and (not any? other turtles-on origin) and (not [allocated?] of origin) [
-    foreach [next-patch] of origin [
+to allocate-patches [ current max-length ]
+  if (max-length != 0) and (not any? other turtles-on current) and (not [allocated?] of current) [
+    foreach [next-patch] of current [
       allocate-patches ?1 (max-length - 1)
     ]
   ]
-  ask origin [ set allocated? true ]
+  ask current [ set allocated? true ]
 end
 
 
@@ -395,7 +414,7 @@ north-frequency
 north-frequency
 0
 50
-25
+0
 1
 1
 NIL
@@ -410,32 +429,32 @@ south-frequency
 south-frequency
 0
 50
-23
+50
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-29
-450
-62
-600
+32
+391
+65
+541
 west-frequency
 west-frequency
 0
 50
-25
+8
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-937
-20
-1109
-53
+911
+24
+1083
+57
 acceleration
 acceleration
 1
@@ -455,17 +474,17 @@ east-frequency
 east-frequency
 0
 50
-25
+12
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-934
-67
-1106
-100
+908
+71
+1080
+104
 road-speed
 road-speed
 0
@@ -477,27 +496,57 @@ NIL
 HORIZONTAL
 
 SLIDER
-938
-202
-1110
-235
+1132
+25
+1304
+58
 radius
 radius
 1
 30
-21
+19
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-938
-253
-1110
-286
+1132
+76
+1304
+109
 lane-gap
 lane-gap
+1
+10
+8
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+1136
+130
+1308
+163
+allocate-factor
+allocate-factor
+1
+10
+1
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+910
+123
+1083
+156
+roundabout-speed
+roundabout-speed
 1
 10
 5
@@ -506,35 +555,55 @@ lane-gap
 NIL
 HORIZONTAL
 
-SLIDER
-942
-307
-1114
-340
-allocate-factor
-allocate-factor
-1
-10
-1
-1
-1
-NIL
-HORIZONTAL
+CHOOSER
+563
+22
+702
+67
+intersection
+intersection
+"roundabout" "adaptive lights"
+0
 
-SLIDER
-936
-119
-1109
-152
-roundabout-speed
-roundabout-speed
-1
-10
-2
-1
-1
+PLOT
+916
+198
+1307
+406
+Turtles count
 NIL
-HORIZONTAL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"Total" 1.0 0 -16777216 true "" "plot count turtles"
+"West" 1.0 0 -955883 true "" "plot count turtles with [origin = \"west\"]"
+"North" 1.0 0 -2674135 true "" "plot count turtles with [origin = \"north\"]"
+"East" 1.0 0 -13791810 true "" "plot count turtles with [origin = \"east\"]"
+"South" 1.0 0 -11085214 true "" "plot count turtles with [origin = \"south\"]"
+
+PLOT
+918
+431
+1308
+581
+Average time on road
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
 
 @#$#@#$#@
 ## WHAT IS IT?
