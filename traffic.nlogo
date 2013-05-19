@@ -3,23 +3,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 globals [
-  world1
-  world2
-  world3
-  world4
-  world-size-x
-  world-size-y
-  
   high-priority-color low-priority-color
+  center-xcor center-ycor
+  lights-horizontal?
 ]
 
 patches-own [
-  patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn"
+  patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn", "light"
   spawn-location ;; For spawns, can be points of compass
-  can-go? ;; Is green light?
   priority
   next-patch
   allocated?
+  stop?
 ]
 
 turtles-own [
@@ -40,12 +35,17 @@ turtles-own [
 to startup
   clear-all
   
+  reset-ticks
+  
+  set center-xcor round(world-width / 2)
+  set center-ycor round(world-height / 2)
+  
+  set lights-horizontal? true
+  
   set high-priority-color black
   set low-priority-color 5
   
   make-world
-  
-  reset-ticks
 end
 
 
@@ -62,37 +62,47 @@ to make-world
     set priority 0
   ]
 
-  ; Create useful constants
-  let center-xcor round(world-width / 2)
-  let center-ycor round(world-height / 2)
-
   ; 1. Color all patches white
   ask patches [
     set pcolor white
+    set stop? false
   ]
   
   ; 2. Draw intersection
-  if ( intersection = "roundabout" ) [ draw-roundabout center-xcor center-ycor ]
-  if ( intersection = "adaptive lights" ) [ draw-adaptive center-xcor center-ycor ]
+  if ( intersection = "roundabout" ) [ draw-roundabout ]
+  if ( intersection = "adaptive lights" ) [
+    
+    ; Make traffic lights
+    ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 3) [
+      set patch-type "light"
+      set stop? false
+    ]
+    ask patch (center-xcor - lane-gap) (center-ycor + lane-gap + 3) [
+      set patch-type "light"
+      set stop? false
+    ]
+    ask patch (center-xcor + lane-gap + 3) (center-ycor + lane-gap) [
+      set patch-type "light"
+      set stop? true
+    ]
+    ask patch (center-xcor - lane-gap - 3) (center-ycor - lane-gap) [
+      set patch-type "light"
+      set stop? true
+    ]
+    
+    switch-lights
+  ]
   
   ; 4. Draw roads with spawns
-  ;draw-road 0 (center-ycor - lane-gap) 1 0
-  make-spawn 0 (center-ycor - lane-gap) "west"
-  
-  ;draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
-  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"
-  
-  ;draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
+  make-spawn 0 (center-ycor - lane-gap) "west"  
+  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"  
   make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
-  
-  ;draw-road (center-xcor + lane-gap) 0 0 1
   make-spawn (center-xcor + lane-gap) 0 "south"
-
   
 end
 
 
-to draw-roundabout [ center-xcor center-ycor ]
+to draw-roundabout
   let tmp 0
   let tmp-delta 0
 
@@ -159,7 +169,39 @@ to draw-roundabout [ center-xcor center-ycor ]
   
 end
 
-to draw-adaptive [ center-xcor center-ycor ]
+to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
+
+  ; Road from north
+  let north-patches patches with [
+     pxcor = (center-xcor - lane-gap) and
+     pycor > 2 and
+     patch-type != "spawn"
+  ]
+  draw-road3 north-patches 0 -1 priority1 priority1-color
+  
+  ; Road from south
+  let south-patches patches with [
+     pxcor = (center-xcor + lane-gap) and
+     pycor < world-height - 2 and
+     patch-type != "spawn"
+  ]
+  draw-road3 south-patches 0 1 priority1 priority1-color
+  
+  ; Road from east
+  let east-patches patches with [
+     pycor = (center-ycor - lane-gap) and
+     pxcor < world-width - 2 and
+     patch-type != "spawn"
+  ]
+  draw-road3 east-patches 1 0 priority2 priority2-color
+  
+  ; Road from west
+  let west-patches patches with [
+     pycor = (center-ycor + lane-gap) and
+     pxcor > 2 and
+     patch-type != "spawn"
+  ]
+  draw-road3 west-patches -1 0 priority2 priority2-color
 
 end
 
@@ -320,6 +362,8 @@ to go
   ;  set pcolor 14
   ;]
   
+  switch-lights
+  
   tick
 end
 
@@ -344,7 +388,7 @@ to-report get-obstacle-distance [ current max-length ]
   let options (list)
     
   foreach [next-patch] of current [  
-    ifelse (any? turtles-on ?1) or ([allocated?] of ?1) [
+    ifelse (any? turtles-on ?1) or ([allocated?] of ?1) or ([stop?] of ?1) [
       set options (lput 0 options)
     ] [
       let next (get-obstacle-distance ?1 (max-length - 1))
@@ -398,6 +442,26 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Switch lights
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+to switch-lights
+  if ( intersection = "adaptive lights" ) [
+    if (ticks mod switch-lights-interval) = 0 [
+          
+      ifelse lights-horizontal? [
+        draw-adaptive 1 2 low-priority-color high-priority-color
+      ] [
+        draw-adaptive 2 1 high-priority-color low-priority-color
+      ]
+      set lights-horizontal? (not lights-horizontal?)
+    
+      ask patches with [ patch-type = "light" ] [
+        set stop? (not stop?)
+        ifelse stop? [ set pcolor 14 ] [ set pcolor 64 ]
+      ]
+      
+    ]
+  ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 88
@@ -501,7 +565,7 @@ south-frequency
 south-frequency
 0
 50
-30
+27
 1
 1
 NIL
@@ -516,7 +580,7 @@ west-frequency
 west-frequency
 0
 50
-19
+23
 1
 1
 NIL
@@ -546,7 +610,7 @@ east-frequency
 east-frequency
 0
 50
-31
+24
 1
 1
 NIL
@@ -635,13 +699,13 @@ CHOOSER
 intersection
 intersection
 "roundabout" "adaptive lights"
-0
+1
 
 PLOT
-916
-198
-1307
-406
+912
+284
+1303
+492
 Turtles count
 NIL
 NIL
@@ -660,10 +724,10 @@ PENS
 "South" 1.0 0 -11085214 true "" "plot count turtles with [origin = \"south\"]"
 
 PLOT
-918
-431
-1308
-581
+914
+517
+1304
+667
 Average time on road
 NIL
 NIL
@@ -676,6 +740,21 @@ false
 "" ""
 PENS
 "default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
+
+SLIDER
+910
+175
+1088
+208
+switch-lights-interval
+switch-lights-interval
+1
+100
+61
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
