@@ -76,16 +76,16 @@ to make-world
   if ( intersection = "adaptive lights" ) [ draw-adaptive center-xcor center-ycor ]
   
   ; 4. Draw roads with spawns
-  draw-road 0 (center-ycor - lane-gap) 1 0
+  ;draw-road 0 (center-ycor - lane-gap) 1 0
   make-spawn 0 (center-ycor - lane-gap) "west"
   
-  draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
+  ;draw-road (world-width - 1) (center-ycor + lane-gap) -1 0
   make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"
   
-  draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
+  ;draw-road (center-xcor - lane-gap) (world-height - 1) 0 -1
   make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
   
-  draw-road (center-xcor + lane-gap) 0 0 1
+  ;draw-road (center-xcor + lane-gap) 0 0 1
   make-spawn (center-xcor + lane-gap) 0 "south"
 
   
@@ -93,6 +93,10 @@ end
 
 
 to draw-roundabout [ center-xcor center-ycor ]
+  let tmp 0
+  let tmp-delta 0
+
+  ; Draw circle
   let i 0
   create-turtles 1 [
     
@@ -112,13 +116,81 @@ to draw-roundabout [ center-xcor center-ycor ]
     
     die
   ]
+    
+  ; Road from north
+  let north-patches patches with [
+     pxcor = (center-xcor - lane-gap) and
+     ( pycor > (max [pycor] of patches with [ pxcor = (center-ycor - lane-gap) and priority = 2 ]) or
+       pycor <= (min [pycor] of patches with [ pxcor = (center-ycor - lane-gap) and priority = 2 ])
+     ) and
+     pycor > 2
+  ]
+  draw-road3 north-patches 0 -1 1 low-priority-color
+  
+  ; Road from south
+  let south-patches patches with [
+     pxcor = (center-xcor + lane-gap) and
+     ( pycor >= (max [pycor] of patches with [ pxcor = (center-xcor + lane-gap) and priority = 2 ]) or
+       pycor < (min [pycor] of patches with [ pxcor = (center-xcor + lane-gap) and priority = 2 ])
+     ) and
+     pycor < world-height - 2
+  ]
+  draw-road3 south-patches 0 1 1 low-priority-color
+  
+  ; Road from east
+  let east-patches patches with [
+     pycor = (center-ycor - lane-gap) and
+     ( pxcor >= (max [pxcor] of patches with [ pycor = (center-ycor - lane-gap) and priority = 2 ]) or
+       pxcor < (min [pxcor] of patches with [ pycor = (center-ycor - lane-gap) and priority = 2 ])
+     ) and
+     pxcor < world-width - 2
+  ]
+  draw-road3 east-patches 1 0 1 low-priority-color
+  
+  ; Road from west
+  let west-patches patches with [
+     pycor = (center-ycor + lane-gap) and
+     ( pxcor > (max [pxcor] of patches with [ pycor = (center-ycor + lane-gap) and priority = 2 ]) or
+       pxcor <= (min [pxcor] of patches with [ pycor = (center-ycor + lane-gap) and priority = 2 ])
+     ) and
+     pxcor > 2
+  ]
+  draw-road3 west-patches -1 0 1 low-priority-color 
+  
 end
 
 to draw-adaptive [ center-xcor center-ycor ]
 
 end
 
-to draw-road [start-x start-y move-x move-y]
+to draw-road3 [ fields move-x move-y pr clr ]
+  ask fields [
+    set priority pr
+    set pcolor clr
+    set next-patch (lput (patch-at move-x move-y) next-patch)
+    set next-patch (remove-duplicates next-patch)
+  ]
+end
+
+to draw-road2 [ start-x start-y end-x end-y move-x move-y pr clr ]
+  create-turtles 1 [
+    setxy start-x start-y
+    
+    while [ not ( xcor = end-x ) and ( ycor = end-y ) ] [
+      ask patch-here [
+        set priority pr
+        set pcolor clr
+        set next-patch (lput (patch-at move-x move-y) next-patch)
+        set next-patch (remove-duplicates next-patch)
+      ]   
+      setxy (xcor + move-x) (ycor + move-y)
+    ]
+    
+    die
+  ]
+end
+
+to draw-road [start-x start-y move-x move-y ]
   let i 0
   let draw? true
   
@@ -194,7 +266,7 @@ to car-factory [ location orientation ]
       ;set chosen-direction "undecided"
       set heading orientation
       set size 3.5
-      set speed 3
+      set speed road-speed
     ]
   ]
 end
@@ -414,7 +486,7 @@ north-frequency
 north-frequency
 0
 50
-0
+16
 1
 1
 NIL
@@ -429,7 +501,7 @@ south-frequency
 south-frequency
 0
 50
-50
+30
 1
 1
 NIL
@@ -444,7 +516,7 @@ west-frequency
 west-frequency
 0
 50
-8
+19
 1
 1
 NIL
@@ -474,7 +546,7 @@ east-frequency
 east-frequency
 0
 50
-12
+31
 1
 1
 NIL
@@ -489,7 +561,7 @@ road-speed
 road-speed
 0
 10
-9
+10
 1
 1
 NIL
