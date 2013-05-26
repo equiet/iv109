@@ -19,12 +19,9 @@ patches-own [
 
 turtles-own [
   ticks-alive
-  ;previous-turn
   speed
   origin
-  ;decided
-  ;chosen-direction
-  ; target-x target-y
+  preferred-turn
 ]
 
 
@@ -70,6 +67,7 @@ to make-world
   
   ; 2. Draw intersection
   if ( intersection = "roundabout" ) [ draw-roundabout ]
+  if ( intersection = "roundabout-quick-right" ) [ draw-roundabout-quick-right ]
   if ( intersection = "adaptive lights" ) [
     
     ; Make traffic lights
@@ -101,6 +99,10 @@ to make-world
   
 end
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Make intersections
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to draw-roundabout
   let tmp 0
@@ -167,6 +169,42 @@ to draw-roundabout
   ]
   draw-road3 west-patches -1 0 1 low-priority-color 
   
+end
+
+to draw-roundabout-quick-right
+  draw-roundabout
+
+  let i 0
+  let draw? false
+  let outer-radius (radius + 5)
+  create-turtles 1 [
+    
+    while [ i > -360 ] [
+     setxy (center-xcor - round(outer-radius * sin i)) (center-ycor - (outer-radius * cos i))
+     ask patch-here [
+     
+       if ( pxcor = center-xcor - lane-gap ) [ set draw? (pycor > center-ycor) ]
+       if ( pxcor = center-xcor + lane-gap ) [ set draw? (pycor < center-ycor) ]
+       if ( pycor = center-ycor - lane-gap ) [ set draw? (pxcor < center-xcor) ]
+       if ( pycor = center-ycor + lane-gap ) [ set draw? (pxcor > center-xcor) ]
+     
+       if draw? [
+         set pcolor low-priority-color
+       
+         let next-x (center-xcor - round(outer-radius * sin (i - 1)))
+         let next-y (center-ycor - round(outer-radius * cos (i - 1)))
+         set next-patch ( lput (patch next-x next-y) next-patch )
+         set next-patch ( remove-duplicates next-patch )
+         set next-patch ( remove (patch pxcor pycor) next-patch )
+       
+         set priority 1
+       ]
+     ]
+     set i (i - 1)
+    ]
+    
+    die
+  ]
 end
 
 to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
@@ -305,10 +343,10 @@ to car-factory [ location orientation ]
   ask patches with [ spawn-location = location ] [
     sprout 1 [
       set origin location
-      ;set chosen-direction "undecided"
       set heading orientation
       set size 3.5
       set speed road-speed
+      set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
     ]
   ]
 end
@@ -352,7 +390,7 @@ to go
   move-turtles priority1
   
   ; Colorize turtles by speed
-  ask turtles with [ speed > 4 ] [ set color 55 ]
+  ask turtles with [ speed >= 4 ] [ set color 55 ]
   ask turtles with [ speed < 4 ] [ set color 44 ]
   ask turtles with [ speed = 1 ] [ set color 25 ]
   ask turtles with [ speed = 0 ] [ set color 15 ]
@@ -371,12 +409,27 @@ to-report move-ahead [ start-patch limit ]
 
   if (limit = 0) [ report start-patch ]
 
-  ifelse ( not empty? ([next-patch] of start-patch) ) [
+  let preferred-x (pxcor + item 0 preferred-turn)
+  let preferred-y (pycor + item 1 preferred-turn)
+  let opposite-x (pxcor + (item 0 preferred-turn) * -1)
+  let opposite-y (pycor + (item 1 preferred-turn) * -1)
+  
+  ; Take preferred turn
+  if ( member? (patch preferred-x preferred-y) next-patch ) [
+    report patch preferred-x preferred-y
+  ]
+  ; Alternatively, take anything except the opposite of preferred turn
+  if ( length ([next-patch] of start-patch) > 1 ) [
+    let random-patch (remove (patch opposite-x opposite-y) ([next-patch] of start-patch))
+    report move-ahead (item 0 (shuffle random-patch)) (limit - 1)
+  ]
+  ; Alternatively, take whatever turn
+  if ( not empty? ([next-patch] of start-patch) ) [
     let random-patch (item 0 (shuffle ([next-patch] of start-patch)))
     report (move-ahead random-patch (limit - 1))
-  ] [
-    report start-patch
   ]
+  ; Alternatively, when no options, return starting patch
+  report start-patch
       
 end
 
@@ -423,7 +476,7 @@ to move-turtles [ turtle-list ]
   ask turtle-list [
     let nearest-obstacle (get-obstacle-distance patch-here speed)
     set speed nearest-obstacle
-    allocate-patches patch-here (speed * allocate-factor)
+    allocate-patches patch-here (speed * lookahead-factor)
   ]
   
   ; 3. No random speed variations
@@ -550,7 +603,7 @@ north-frequency
 north-frequency
 0
 50
-16
+33
 1
 1
 NIL
@@ -565,7 +618,7 @@ south-frequency
 south-frequency
 0
 50
-27
+0
 1
 1
 NIL
@@ -580,7 +633,7 @@ west-frequency
 west-frequency
 0
 50
-23
+0
 1
 1
 NIL
@@ -604,13 +657,13 @@ HORIZONTAL
 SLIDER
 748
 377
-785
+781
 527
 east-frequency
 east-frequency
 0
 50
-24
+0
 1
 1
 NIL
@@ -623,9 +676,9 @@ SLIDER
 104
 road-speed
 road-speed
-0
+1
 10
-10
+1
 1
 1
 NIL
@@ -655,7 +708,7 @@ lane-gap
 lane-gap
 1
 10
-8
+6
 1
 1
 NIL
@@ -666,11 +719,11 @@ SLIDER
 130
 1308
 163
-allocate-factor
-allocate-factor
+lookahead-factor
+lookahead-factor
 1
 10
-1
+2
 1
 1
 NIL
@@ -685,7 +738,7 @@ roundabout-speed
 roundabout-speed
 1
 10
-5
+1
 1
 1
 NIL
@@ -694,12 +747,12 @@ HORIZONTAL
 CHOOSER
 563
 22
-702
+763
 67
 intersection
 intersection
-"roundabout" "adaptive lights"
-1
+"roundabout" "roundabout-quick-right" "adaptive lights"
+0
 
 PLOT
 912
