@@ -323,22 +323,26 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to add-from-north
-  car-factory "north" 180
+  ; Cannot make north turn
+  car-factory "north" 180 (list (list 1 0) (list -1 0) (list 0 -1))
 end
 
 to add-from-south
-  car-factory "south" 0
+  ; Cannot make south turn
+  car-factory "south" 0 (list (list 1 0) (list -1 0) (list 0 1))
 end
 
 to add-from-east
-  car-factory "east" 270
+  ; Cannot make east turn
+  car-factory "east" 270 (list (list 0 1) (list -1 0) (list 0 -1))
 end
 
 to add-from-west
-  car-factory "west" 90
+  ; Cannot make west turn
+  car-factory "west" 90 (list (list 1 0) (list 0 1) (list 0 -1))
 end
 
-to car-factory [ location orientation ] 
+to car-factory [ location orientation possible-turns ] 
   
   ask patches with [ spawn-location = location ] [
     sprout 1 [
@@ -346,7 +350,9 @@ to car-factory [ location orientation ]
       set heading orientation
       set size 3.5
       set speed road-speed
-      set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
+      set preferred-turn item (random 3) possible-turns
+      ;set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
+      ;set preferred-turn (list 0 1)
     ]
   ]
 end
@@ -603,7 +609,7 @@ north-frequency
 north-frequency
 0
 50
-33
+0
 1
 1
 NIL
@@ -618,7 +624,7 @@ south-frequency
 south-frequency
 0
 50
-0
+29
 1
 1
 NIL
