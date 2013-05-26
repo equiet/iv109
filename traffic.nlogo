@@ -1,3 +1,6 @@
+; TODO
+; premenovat switch-lights-frequency a orange-length na nieco zmysluplne
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -74,18 +77,22 @@ to make-world
     ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 3) [
       set patch-type "light"
       set stop? false
+      set pcolor green
     ]
     ask patch (center-xcor - lane-gap) (center-ycor + lane-gap + 3) [
       set patch-type "light"
       set stop? false
+      set pcolor green
     ]
     ask patch (center-xcor + lane-gap + 3) (center-ycor + lane-gap) [
       set patch-type "light"
       set stop? true
+      set pcolor red
     ]
     ask patch (center-xcor - lane-gap - 3) (center-ycor - lane-gap) [
       set patch-type "light"
       set stop? true
+      set pcolor red
     ]
     
     switch-lights
@@ -352,7 +359,6 @@ to car-factory [ location orientation possible-turns ]
       set speed road-speed
       set preferred-turn item (random 3) possible-turns
       ;set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
-      ;set preferred-turn (list 0 1)
     ]
   ]
 end
@@ -504,7 +510,12 @@ end
 
 to switch-lights
   if ( intersection = "adaptive lights" ) [
-    if (ticks mod switch-lights-interval) = 0 [
+    
+    let red-lights (patches with [ patch-type = "light" and pcolor = red ])
+    let orange-lights (patches with [ patch-type = "light" and pcolor = orange ])
+    let green-lights (patches with [ patch-type = "light" and pcolor = green ])
+  
+    if (ticks mod (switch-lights-interval + orange-length)) = 0 [
           
       ifelse lights-horizontal? [
         draw-adaptive 1 2 low-priority-color high-priority-color
@@ -513,12 +524,30 @@ to switch-lights
       ]
       set lights-horizontal? (not lights-horizontal?)
     
-      ask patches with [ patch-type = "light" ] [
-        set stop? (not stop?)
-        ifelse stop? [ set pcolor 14 ] [ set pcolor 64 ]
+      ask red-lights [
+        set stop? false
+        set pcolor green
+      ]    
+      ask orange-lights [
+        set stop? true
+        set pcolor red
+      ]
+      ask green-lights [
+        set stop? true
+        set pcolor red
       ]
       
     ]
+    
+    if (ticks mod (switch-lights-interval + orange-length)) = orange-length [
+     
+      ask green-lights [
+        set stop? true
+        set pcolor orange
+      ]
+      
+    ]
+    
   ]
 end
 @#$#@#$#@
@@ -609,7 +638,7 @@ north-frequency
 north-frequency
 0
 50
-0
+30
 1
 1
 NIL
@@ -624,7 +653,7 @@ south-frequency
 south-frequency
 0
 50
-29
+30
 1
 1
 NIL
@@ -639,7 +668,7 @@ west-frequency
 west-frequency
 0
 50
-0
+30
 1
 1
 NIL
@@ -669,7 +698,7 @@ east-frequency
 east-frequency
 0
 50
-0
+30
 1
 1
 NIL
@@ -684,7 +713,7 @@ road-speed
 road-speed
 1
 10
-1
+4
 1
 1
 NIL
@@ -744,7 +773,7 @@ roundabout-speed
 roundabout-speed
 1
 10
-1
+4
 1
 1
 NIL
@@ -758,7 +787,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "adaptive lights"
-0
+2
 
 PLOT
 912
@@ -809,7 +838,22 @@ switch-lights-interval
 switch-lights-interval
 1
 100
-61
+32
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+911
+222
+1083
+255
+orange-length
+orange-length
+1
+100
+32
 1
 1
 NIL
