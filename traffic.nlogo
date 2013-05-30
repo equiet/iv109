@@ -550,6 +550,14 @@ to switch-lights
     
   ]
 end
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Export
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+to export
+  export-plot "Average time on road" (word "plots/" intersection "-" north-frequency "-" east-frequency "-" south-frequency "-" west-frequency ".csv")
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 98
@@ -858,6 +866,23 @@ orange-length
 1
 NIL
 HORIZONTAL
+
+BUTTON
+277
+20
+346
+53
+NIL
+export
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
