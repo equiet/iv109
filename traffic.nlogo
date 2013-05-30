@@ -380,8 +380,8 @@ to go
   ; Reset allocated color
   ask patches with [ allocated? ] [
     set allocated? false
-    if ( priority = 2 ) [ set pcolor high-priority-color ]
-    if ( priority = 1 ) [ set pcolor low-priority-color ]
+    ;if ( priority = 2 ) [ set pcolor high-priority-color ]
+    ;if ( priority = 1 ) [ set pcolor low-priority-color ]
   ]
   
   ; Update ticks-alive
@@ -408,9 +408,9 @@ to go
   ask turtles with [ speed = 0 ] [ set color 15 ]
   
   ; Highlight allocated space
-  ask patches with [ allocated? ] [
-    set pcolor 14
-  ]
+  ;ask patches with [ allocated? ] [
+  ;  set pcolor 14
+  ;]
   
   switch-lights
   
@@ -552,9 +552,9 @@ to switch-lights
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-88
-138
-703
+98
+143
+708
 774
 -1
 -1
@@ -569,9 +569,9 @@ GRAPHICS-WINDOW
 1
 1
 0
-120
+119
 0
-120
+119
 1
 1
 1
@@ -668,7 +668,7 @@ west-frequency
 west-frequency
 0
 50
-0
+26
 1
 1
 NIL
@@ -698,7 +698,7 @@ east-frequency
 east-frequency
 0
 50
-0
+50
 1
 1
 NIL
