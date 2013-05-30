@@ -380,8 +380,8 @@ to go
   ; Reset allocated color
   ask patches with [ allocated? ] [
     set allocated? false
-    ;if ( priority = 2 ) [ set pcolor high-priority-color ]
-    ;if ( priority = 1 ) [ set pcolor low-priority-color ]
+    if ( priority = 2 ) [ set pcolor high-priority-color ]
+    if ( priority = 1 ) [ set pcolor low-priority-color ]
   ]
   
   ; Update ticks-alive
@@ -408,9 +408,9 @@ to go
   ask turtles with [ speed = 0 ] [ set color 15 ]
   
   ; Highlight allocated space
-  ;ask patches with [ allocated? ] [
-  ;  set pcolor 14
-  ;]
+  ask patches with [ allocated? ] [
+    set pcolor 14
+  ]
   
   switch-lights
   
@@ -421,18 +421,18 @@ to-report move-ahead [ start-patch limit ]
 
   if (limit = 0) [ report start-patch ]
 
-  let preferred-x (pxcor + item 0 preferred-turn)
-  let preferred-y (pycor + item 1 preferred-turn)
-  let opposite-x (pxcor + (item 0 preferred-turn) * -1)
-  let opposite-y (pycor + (item 1 preferred-turn) * -1)
-  
+  let preferred-x ([pxcor] of start-patch + item 0 preferred-turn)
+  let preferred-y ([pycor] of start-patch + item 1 preferred-turn)
+  let opposite-x ([pxcor] of start-patch + (item 0 preferred-turn) * -1)
+  let opposite-y ([pycor] of start-patch + (item 1 preferred-turn) * -1)
+    
   ; Take preferred turn
-  if ( member? (patch preferred-x preferred-y) next-patch ) [
-    report patch preferred-x preferred-y
+  if ( member? (patch preferred-x preferred-y) ([next-patch] of start-patch) ) [
+    report move-ahead (patch preferred-x preferred-y) (limit - 1)
   ]
   ; Alternatively, take anything except the opposite of preferred turn
   if ( length ([next-patch] of start-patch) > 1 ) [
-    let random-patch (remove (patch opposite-x opposite-y) ([next-patch] of start-patch))
+    let random-patch (remove (patch opposite-x opposite-y) ([next-patch] of  start-patch))
     report move-ahead (item 0 (shuffle random-patch)) (limit - 1)
   ]
   ; Alternatively, take whatever turn
@@ -638,7 +638,7 @@ north-frequency
 north-frequency
 0
 50
-30
+31
 1
 1
 NIL
@@ -653,7 +653,7 @@ south-frequency
 south-frequency
 0
 50
-30
+0
 1
 1
 NIL
@@ -668,7 +668,7 @@ west-frequency
 west-frequency
 0
 50
-30
+0
 1
 1
 NIL
@@ -698,7 +698,7 @@ east-frequency
 east-frequency
 0
 50
-30
+0
 1
 1
 NIL
@@ -773,7 +773,7 @@ roundabout-speed
 roundabout-speed
 1
 10
-4
+3
 1
 1
 NIL
@@ -787,7 +787,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "adaptive lights"
-2
+0
 
 PLOT
 912
