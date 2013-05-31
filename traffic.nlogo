@@ -104,6 +104,11 @@ to make-world
   make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
   make-spawn (center-xcor + lane-gap) 0 "south"
   
+  ; 5. Add center reference point
+  ask patch center-xcor center-ycor [
+    set pcolor 1
+  ]
+  
 end
 
 
@@ -356,7 +361,7 @@ to car-factory [ location orientation possible-turns ]
       set origin location
       set heading orientation
       set size 3.5
-      set speed road-speed
+      set speed priority-1-speed
       set preferred-turn item (random 3) possible-turns
       ;set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
     ]
@@ -380,8 +385,10 @@ to go
   ; Reset allocated color
   ask patches with [ allocated? ] [
     set allocated? false
-    ;if ( priority = 2 ) [ set pcolor high-priority-color ]
-    ;if ( priority = 1 ) [ set pcolor low-priority-color ]
+    if display-allocation? [
+      if ( priority = 2 ) [ set pcolor high-priority-color ]
+      if ( priority = 1 ) [ set pcolor low-priority-color ]
+    ]
   ]
   
   ; Update ticks-alive
@@ -396,10 +403,7 @@ to go
   ask (turtles-on patches with [ priority = 0 ]) [ die ]
   
   ; Move it move it
-  let priority2 (turtles-on patches with [ priority = 2 ])
-  let priority1 (turtles-on patches with [ priority = 1 ])
-  move-turtles priority2
-  move-turtles priority1
+  move-turtles
   
   ; Colorize turtles by speed
   ask turtles with [ speed >= 4 ] [ set color 55 ]
@@ -408,9 +412,11 @@ to go
   ask turtles with [ speed = 0 ] [ set color 15 ]
   
   ; Highlight allocated space
-  ;ask patches with [ allocated? ] [
-  ;  set pcolor 14
-  ;]
+  if display-allocation? [
+    ask patches with [ allocated? ] [
+      set pcolor 14
+    ]
+  ]
   
   switch-lights
   
@@ -474,18 +480,22 @@ to allocate-patches [ current max-length ]
   ask current [ set allocated? true ]
 end
 
-
-to move-turtles [ turtle-list ]
-
-  ; 1. Increase speed by acceleration
-  ask turtle-list [
+to move-turtles
+  
+   ; 1. Increase speed by acceleration
+  ask turtles [
     set speed (speed + acceleration)
-    if ( priority = 1 ) [ set speed (min list road-speed speed) ]
-    if ( priority = 2 ) [ set speed (min list roundabout-speed speed) ]
+    if ( priority = 1 ) [ set speed (min list priority-1-speed speed) ]
+    if ( priority = 2 ) [ set speed (min list priority-2-speed speed) ]
   ]
   
-  ; 2. Slow down to nearest obstacle and allocate more patches
-  ask turtle-list [
+  ; 2. Slow down to nearest obstacle and allocate more patches, ordered by priority
+  ask (turtles-on patches with [ priority = 2 ]) [
+    let nearest-obstacle (get-obstacle-distance patch-here speed)
+    set speed nearest-obstacle
+    allocate-patches patch-here (speed * lookahead-factor)
+  ]
+  ask (turtles-on patches with [ priority = 1 ]) [
     let nearest-obstacle (get-obstacle-distance patch-here speed)
     set speed nearest-obstacle
     allocate-patches patch-here (speed * lookahead-factor)
@@ -495,12 +505,12 @@ to move-turtles [ turtle-list ]
   ; noop
   
   ; 4. Move turtles
-  ask turtle-list [
+  ask turtles [
     let target-patch (move-ahead patch-here speed)
     facexy ([pxcor] of target-patch) ([pycor] of target-patch)
     setxy ([pxcor] of target-patch) ([pycor] of target-patch)
   ]
-
+  
 end
 
 
@@ -646,7 +656,7 @@ north-frequency
 north-frequency
 0
 50
-31
+0
 1
 1
 NIL
@@ -676,7 +686,7 @@ west-frequency
 west-frequency
 0
 50
-26
+0
 1
 1
 NIL
@@ -706,7 +716,7 @@ east-frequency
 east-frequency
 0
 50
-50
+0
 1
 1
 NIL
@@ -717,11 +727,11 @@ SLIDER
 71
 1080
 104
-road-speed
-road-speed
+priority-1-speed
+priority-1-speed
 1
+20
 10
-4
 1
 1
 NIL
@@ -735,8 +745,8 @@ SLIDER
 radius
 radius
 1
-30
-19
+10
+10
 1
 1
 NIL
@@ -750,8 +760,8 @@ SLIDER
 lane-gap
 lane-gap
 1
-10
-6
+5
+4
 1
 1
 NIL
@@ -777,11 +787,11 @@ SLIDER
 123
 1083
 156
-roundabout-speed
-roundabout-speed
+priority-2-speed
+priority-2-speed
 1
+20
 10
-3
 1
 1
 NIL
@@ -795,7 +805,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "adaptive lights"
-0
+2
 
 PLOT
 912
@@ -840,7 +850,7 @@ PENS
 SLIDER
 910
 175
-1088
+1097
 208
 switch-lights-interval
 switch-lights-interval
@@ -883,6 +893,17 @@ NIL
 NIL
 NIL
 1
+
+SWITCH
+1134
+180
+1307
+213
+display-allocation?
+display-allocation?
+1
+1
+-1000
 
 @#$#@#$#@
 ## WHAT IS IT?

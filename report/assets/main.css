@@ -7,6 +7,7 @@ body {
 	line-height: 1.8em;
 	color: #333;
 	counter-reset: headings;
+	counter-reset: figures;
 }
 
 
@@ -42,7 +43,7 @@ p {
 section {
 	margin-bottom: 10em;
 }
-	section .content {
+	section .columns {
 		-webkit-column-count: 2;
 	   	-webkit-column-gap : 4rem;
 	}
@@ -70,4 +71,13 @@ section {
 }
 	.todo:before {
 		content: 'TODO: ';
+	}
+
+figure {
+	counter-increment: figures
+}
+	figcaption:before {
+		font-style: italic;
+		font-weight: bold;
+		content: "Fig. " counter(figures) ": ";
 	}

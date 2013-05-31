@@ -34,7 +34,7 @@
 		<section>
 			<h2>Introduction</h2>
 
-			<div class="content">
+			<div class="columns">
 				<p>During the past few decades we have seen a wide adoption of alternative traffic control schemes, especially roundabouts.</p>
 				<p>Traffic managements is becoming extremely complex due to overloaded communications and predicting the traffic flow cannot be considered reliable.</p>
 				<p>A need for flexibility has lead to innovative traffic control mechanisms.</p>
@@ -49,7 +49,7 @@
 		<section>
 			<h2>The Problem</h2>
 
-			<div class="content">
+			<div class="columns">
 				<p>Traffic simulation can become highly complex, considering many factors such as acceleration, yield-of-way-rules and speed regulation.</p>
 				<p>A general objective of keeping the traffic flow on a highest level possible might be misleading.</p>
 				<p>Despite the symmetric nature of our targeted intersections, traffic flow from one direction can be effectively throttled by another road.</p>
@@ -61,8 +61,12 @@
 		<section>
 			<h2>Construction of the Model</h2>
 
-			<div class="content">
-				<p>The simulated world consists of a grid of 120x120 patches. Each patch represents $1 m^2$ in the real world.</p>
+			<div class="columns">
+				<figure>
+					<img src="assets/images/patches.png" alt="">
+					<figcaption>Distance between patches $|AB| = |AC| = |AD| = 3 m$</figcaption>
+				</figure>
+				<p>The simulated world consists of a grid of 120x120 patches. Travelling distance from a patch to all is neighbours represents 3 metres in the real world (see fig. 1).</p>
 				<p>As a base for our computations, we consider the smallest discrete time interval (aka <em>tick</em>) to be <strong>1 second</strong> in the real world.</p>
 				<p>Cars are represented using NetLogo's <em>turtles</em>. Each turtle moves n patches over 1 second, where n is it's current speed.</p>
 				<p>Turtles are allowed to move only on <em>road</em> patches. Each <em>road</em> patch has a static variable <em>priority</em> used for determining the right-of-way rules.</p>
@@ -78,7 +82,7 @@
 				<p>The outline of our movement model of the turtle can be represented in these steps, which occur on every tick $i$:</p>
 				<ol>
 					<li>
-						<p><strong>Acceleration:</strong> Velocity $v_{t}$ of each turtle $t$ is increased by the acceleration $a = 1$. This represents the acceleration of $1 m/s^2$ in the real world. <span class="todo">porovnat s realnym svetom</span></p>
+						<p><strong>Acceleration:</strong> Velocity $v_{t}$ of each turtle $t$ is increased by the acceleration $a = 1$. This represents the acceleration of $3 m/s^2$ in the real world. <span class="todo">porovnat s realnym svetom</span></p>
 						<p>$v_{t}^{(i+1/2)} = v_{t}^{(i)} + a$</p>
 						<p>Using a constant acceleration $a$, our model assumes uniform acceleration of a car accross the whole speed range.</p>
 					</li>	
@@ -89,11 +93,14 @@
 							<li>distance $d$ to the nearest obstacle (another turtle, field allocated by another turtle or stopping traffic light)</li>
 						</ul>
 						<p>$v_{t}^{(i+1)} = min\{v_{t}^{(i+1/2)}, vmax_r, d\}$</p>
-						<p>Maximum speed of the road is fixed $14\ m/s$, representing $\sim 50\ km/h$ in the real world.</p>
+						<p>Maximum speed of the road is fixed $14\frac{m}{s}$, representing $\sim 50\ km/h$ in the real world.</p>
 						<p>Due to the two-dimensional space (instead of just one-dimensional found in NS model) we need to introduce a process of patch allocation.</p>
 						<p>At this point, each turtle allocates fields in front of it. Since the movement may result in various ways (i.e. fork on crossings), at most $v_{t}^{(i+1/2)}$ is allocated for each possible way. <br><span class="todo">Toto treba prerobit aby kazda turtle alokovala patche len v tej ceste, ktorou sa naozaj vyda</span></p>
 						<p>The allocation process may introduce nondeterministic behaviour in two-dimensional space. To achieve a determinitic behavior, we need to execute the slowdown and allocation in an ordered manner. Turtles in this process are partially ordered using the priority of their current patch, which can be either $1$ (executed later) or $2$ (executed sooner).</p>
-						<span class="todo">obrazok priority road</span></p>
+						<figure>
+							<img src="assets/images/priorities.png" alt="">
+							<figcaption>Black patches in our simulation represent high-priority road. Grey patches represent low-priority road.</figcaption>
+						</figure>
 					</li>
 					<li>
 						<p><strong>Speed variation:</strong> This step in the original NS model represents the random slowdown of certain turtles. This event is not considered in our model.</p>
@@ -107,7 +114,33 @@
 
 			<div>
 				<h3>Intersections</h3>
+
 				<h4>Classic Roundabout</h4>
+				<div class="columns">
+					<figure>
+						<img src="assets/images/roundabout.png" alt="">
+						<figcaption>Classic roundabout</figcaption>
+					</figure>
+					<p>A first traffic control mechanism analyzed in our model is roundabout.</p>
+					<p>We compare roundabouts of various sizes, described by radius $r$ and lane gap $g$ illustrated in <em>figure 2</em>.</p>
+					<p>A car entering a roundabout randomly chooses it's exit direction using a uniform probabilistic function. Since traffic lights scheme does not allow U-turn (i.e. 180° change in car's direction), we disallow U-turns from all of our model situations.</p>
+					<p>Possible routes of a car coming from the south are illustrated in <em>figure 2</em>.</p>
+					<p>A car entering the the roundabout yields the right of way when entering the roundabout at point <em>A</em>.</p>
+					<p>The roundabout patches has higher priority than road patches.</p>
+				</div>
+
+				<h4>Roundabout with quick right turn</h4>
+				<div class="columns">
+					<figure>
+						<img src="assets/images/roundabout-quick-right.png" alt="">
+						<figcaption>Roundabout with quick right turn</figcaption>
+					</figure>
+					<p>Another modeled scheme is a Roundabout with a quick right turn. This is a variation of a Classic roundabout.</p>
+					<p>In this model, a car with an intent of right turn does not enter roundabout at all.</p>
+				</div>
+
+				<h4>Traffic lights</h4>
+
 			</div>
 		</section>
 
