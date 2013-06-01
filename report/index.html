@@ -95,12 +95,13 @@
 						<p>$v_{t}^{(i+1)} = min\{v_{t}^{(i+1/2)}, vmax_r, d\}$</p>
 						<p>Maximum speed of the road is fixed $14 m/s$, representing $\sim 50\ km/h$ in the real world.</p>
 						<p>Due to the two-dimensional space (instead of just one-dimensional found in NS model) we need to introduce a process of patch allocation.</p>
-						<p>At this point, each turtle allocates fields in front of it. Since the movement may result in various ways (i.e. fork on crossings), at most $v_{t}^{(i+1/2)}$ is allocated for each possible way. <br><span class="todo">Toto treba prerobit aby kazda turtle alokovala patche len v tej ceste, ktorou sa naozaj vyda</span></p>
 						<p>The allocation process may introduce nondeterministic behaviour in two-dimensional space. To achieve a deterministic behavior, we need to execute the slowdown and allocation in an ordered manner. Turtles in this process are partially ordered using the priority of their current patch, which can be either $1$ (executed later) or $2$ (executed sooner).</p>
 						<figure>
 							<img src="assets/images/priorities.png" alt="">
 							<figcaption>Black patches in our simulation represent high-priority road. Grey patches represent low-priority road.</figcaption>
 						</figure>
+						<p>Each turtle allocates fields on its path. Path is computed using a process described later in this document. <span class="todo">treba to niekde opisat</span> Each turtle allocates at most $v_t^{i+1}*l$ patches.</p>
+						<p>Allocation factor $l$ ensures that turtle yields the right of way if the second turtle is less than $l$ seconds away. In our model we use constant allocation factor $l = 3$.</p>
 					</li>
 					<li>
 						<p><strong>Speed variation:</strong> This step in the original NS model represents the random slowdown of certain turtles. This event is not considered in our model.</p>

@@ -379,20 +379,24 @@ to-report move-ahead [ start-patch limit ]
   let preferred-y ([pycor] of start-patch + item 1 preferred-turn)
   let opposite-x ([pxcor] of start-patch + (item 0 preferred-turn) * -1)
   let opposite-y ([pycor] of start-patch + (item 1 preferred-turn) * -1)
+  
+  let possibilities ([next-patch] of start-patch)
+  
+  let preferred-patch (patch preferred-x preferred-y)
+  let opposite-patch (patch opposite-x opposite-y)
     
   ; Take preferred turn
-  if ( member? (patch preferred-x preferred-y) ([next-patch] of start-patch) ) [
-    report move-ahead (patch preferred-x preferred-y) (limit - 1)
+  if ( member? preferred-patch possibilities ) [
+    report move-ahead preferred-patch (limit - 1)
   ]
   ; Alternatively, take anything except the opposite of preferred turn
-  if ( length ([next-patch] of start-patch) > 1 ) [
-    let random-patch (remove (patch opposite-x opposite-y) ([next-patch] of  start-patch))
-    report move-ahead (item 0 (shuffle random-patch)) (limit - 1)
+  if ( not empty? (remove opposite-patch possibilities) ) [
+    let alternative (first (remove opposite-patch possibilities))
+    report move-ahead alternative (limit - 1)
   ]
-  ; Alternatively, take whatever turn
-  if ( not empty? ([next-patch] of start-patch) ) [
-    let random-patch (item 0 (shuffle ([next-patch] of start-patch)))
-    report (move-ahead random-patch (limit - 1))
+  ; Alternatively, take the opposite of preferred turn
+  if ( member? opposite-patch possibilities ) [
+    report move-ahead opposite-patch (limit - 1)
   ]
   ; Alternatively, when no options, return starting patch
   report start-patch
@@ -419,34 +423,61 @@ to-report get-obstacle-distance [ current max-length ]
   
 end
 
-to allocate-patches [ current max-length ]
-  if (max-length != 0) and (not any? other turtles-on current) and (not [allocated?] of current) [
-    foreach [next-patch] of current [
-      allocate-patches ?1 (max-length - 1)
-    ]
+to-report allocate-patches [ start-patch limit ] ; Reports the distance to the nearest obstacle
+
+  if (limit = 0)
+    or (any? other turtles-on start-patch)
+    or ([allocated?] of start-patch)
+    or ([stop?] of start-patch)
+    [ report 0 ]
+    
+  ; Allocate this field
+  ask start-patch [ set allocated? true ]
+
+  let preferred-x ([pxcor] of start-patch + item 0 preferred-turn)
+  let preferred-y ([pycor] of start-patch + item 1 preferred-turn)
+  let opposite-x ([pxcor] of start-patch + (item 0 preferred-turn) * -1)
+  let opposite-y ([pycor] of start-patch + (item 1 preferred-turn) * -1)
+  
+  let possibilities ([next-patch] of start-patch)
+  let preferred-patch (patch preferred-x preferred-y)
+  let opposite-patch (patch opposite-x opposite-y)
+    
+  ; Take preferred turn
+  if ( member? preferred-patch possibilities ) [
+    report 1 + allocate-patches preferred-patch (limit - 1)
   ]
-  ask current [ set allocated? true ]
+  ; Alternatively, take anything except the opposite of preferred turn
+  if ( not empty? (remove opposite-patch possibilities) ) [
+    let alternative (first (remove opposite-patch possibilities))
+    report 1 + allocate-patches alternative (limit - 1)
+  ]
+  ; Alternatively, take the opposite of preferred turn
+  if ( member? opposite-patch possibilities ) [
+    report 1 + allocate-patches opposite-patch (limit - 1)
+  ]
+  ; Alternatively, when no options (end of road), move 1 field forward to die
+  report 1
+  
 end
 
 to move-turtles
   
-   ; 1. Increase speed by acceleration
+  ; 1. Increase speed by acceleration constant
   ask turtles [
     set speed (speed + acceleration)
     if ( priority = 1 ) [ set speed (min list priority-1-speed speed) ]
     if ( priority = 2 ) [ set speed (min list priority-2-speed speed) ]
   ]
   
-  ; 2. Slow down to nearest obstacle and allocate more patches, ordered by priority
+  ; 2. Allocate patches at lookahead distance, or until the nearest obstacle
   ask (turtles-on patches with [ priority = 2 ]) [
-    let nearest-obstacle (get-obstacle-distance patch-here speed)
-    set speed nearest-obstacle
-    allocate-patches patch-here (speed * lookahead-factor)
+    let nearest-obstacle (allocate-patches patch-here (speed * lookahead-factor))
+    set speed min (list (nearest-obstacle - 1) speed)
   ]
   ask (turtles-on patches with [ priority = 1 ]) [
-    let nearest-obstacle (get-obstacle-distance patch-here speed)
-    set speed nearest-obstacle
-    allocate-patches patch-here (speed * lookahead-factor)
+    let nearest-obstacle (allocate-patches patch-here (speed * lookahead-factor))
+    set speed min (list (nearest-obstacle - 1) speed)
   ]
   
   ; 3. No random speed variations
@@ -517,6 +548,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Export
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 to export
   export-plot "Average time on road" (word "plots/" intersection "-" north-frequency "-" east-frequency "-" south-frequency "-" west-frequency ".csv")
 end
@@ -623,7 +655,7 @@ south-frequency
 south-frequency
 0
 50
-30
+0
 1
 1
 NIL
@@ -668,7 +700,7 @@ east-frequency
 east-frequency
 0
 50
-18
+0
 1
 1
 NIL
@@ -698,7 +730,7 @@ radius
 radius
 1
 40
-25
+20
 1
 1
 m
@@ -713,7 +745,7 @@ lane-gap
 lane-gap
 1
 10
-1
+5
 1
 1
 m
@@ -728,7 +760,7 @@ lookahead-factor
 lookahead-factor
 1
 10
-2
+3
 1
 1
 NIL
@@ -823,7 +855,7 @@ orange-length
 orange-length
 1
 100
-14
+35
 1
 1
 s
@@ -853,7 +885,7 @@ SWITCH
 213
 display-allocation?
 display-allocation?
-1
+0
 1
 -1000
 
