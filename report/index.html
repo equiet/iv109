@@ -64,9 +64,9 @@
 			<div class="columns">
 				<figure>
 					<img src="assets/images/patches.png" alt="">
-					<figcaption>Distance between patches $|AB| = |AC| = |AD| = 3 m$</figcaption>
+					<figcaption>Distance between patches $|AB| = |AC| = |AD| = 1 m$</figcaption>
 				</figure>
-				<p>The simulated world consists of a grid of 120x120 patches. Travelling distance from a patch to all is neighbours represents 3 metres in the real world (see fig. 1).</p>
+				<p>The simulated world consists of a grid of 120x120 patches. Travelling distance from a patch to all is neighbours represents 1 meter in the real world (see fig. 1).</p>
 				<p>As a base for our computations, we consider the smallest discrete time interval (aka <em>tick</em>) to be <strong>1 second</strong> in the real world.</p>
 				<p>Cars are represented using NetLogo's <em>turtles</em>. Each turtle moves n patches over 1 second, where n is it's current speed.</p>
 				<p>Turtles are allowed to move only on <em>road</em> patches. Each <em>road</em> patch has a static variable <em>priority</em> used for determining the right-of-way rules.</p>
@@ -82,7 +82,7 @@
 				<p>The outline of our movement model of the turtle can be represented in these steps, which occur on every tick $i$:</p>
 				<ol>
 					<li>
-						<p><strong>Acceleration:</strong> Velocity $v_{t}$ of each turtle $t$ is increased by the acceleration $a = 1$. This represents the acceleration of $3 m/s^2$ in the real world. <span class="todo">porovnat s realnym svetom</span></p>
+						<p><strong>Acceleration:</strong> Velocity $v_{t}$ of each turtle $t$ is increased by the acceleration $a = 1$. This represents the acceleration of $1 m/s^2$ in the real world. This is close to the real-world $1.4 m/s^2$ acceleration observed in our road tests.</p>
 						<p>$v_{t}^{(i+1/2)} = v_{t}^{(i)} + a$</p>
 						<p>Using a constant acceleration $a$, our model assumes uniform acceleration of a car accross the whole speed range.</p>
 					</li>	
@@ -93,7 +93,7 @@
 							<li>distance $d$ to the nearest obstacle (another turtle, field allocated by another turtle or stopping traffic light)</li>
 						</ul>
 						<p>$v_{t}^{(i+1)} = min\{v_{t}^{(i+1/2)}, vmax_r, d\}$</p>
-						<p>Maximum speed of the road is fixed $14\frac{m}{s}$, representing $\sim 50\ km/h$ in the real world.</p>
+						<p>Maximum speed of the road is fixed $14 m/s$, representing $\sim 50\ km/h$ in the real world.</p>
 						<p>Due to the two-dimensional space (instead of just one-dimensional found in NS model) we need to introduce a process of patch allocation.</p>
 						<p>At this point, each turtle allocates fields in front of it. Since the movement may result in various ways (i.e. fork on crossings), at most $v_{t}^{(i+1/2)}$ is allocated for each possible way. <br><span class="todo">Toto treba prerobit aby kazda turtle alokovala patche len v tej ceste, ktorou sa naozaj vyda</span></p>
 						<p>The allocation process may introduce nondeterministic behaviour in two-dimensional space. To achieve a determinitic behavior, we need to execute the slowdown and allocation in an ordered manner. Turtles in this process are partially ordered using the priority of their current patch, which can be either $1$ (executed later) or $2$ (executed sooner).</p>
@@ -140,6 +140,16 @@
 				</div>
 
 				<h4>Traffic lights</h4>
+				<div class="columns">
+					<figure>
+						<img src="assets/images/traffic-lights.png" alt="">
+						<figcaption>Fixed interval traffic lights</figcaption>
+					</figure>
+					<p>We have chosen Traffic Lights with fixed interval to be the last modeled scheme in this project.</p>
+					<p>Car waits on point A in <em>figure 3</em> until there is a green light for its direction.</p>
+					<p>Traffic lights interval consists of green-light length and orange-light length.</p>
+					<p>Sufficient lane gap $g$ is necessary to prevent the dead-lock of left-turning cars.</p>
+				</div>
 
 			</div>
 		</section>
