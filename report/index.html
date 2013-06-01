@@ -78,6 +78,7 @@
 
 			<div>
 				<h3>Movement of the Turtles</h3>
+				<p>Upon the creation of the turtle, each one is assigned it's final direction using a uniform probabilistic function. Since some of our modeled control schemes do not allow U-turn (i.e. 180° change in car's direction), we disallow U-turns from all of our model situations.</p>
 				<p>The concept of turtle movement is based on a modified version of <em>Nagel–Schreckenberg model</em><sup>[citation needed]</sup>. In this model we are not considering the random decrease of speed of turtles.</p>
 				<p>The outline of our movement model of the turtle can be represented in these steps, which occur on every tick $i$:</p>
 				<ol>
@@ -100,14 +101,16 @@
 							<img src="assets/images/priorities.png" alt="">
 							<figcaption>Black patches in our simulation represent high-priority road. Grey patches represent low-priority road.</figcaption>
 						</figure>
-						<p>Each turtle allocates fields on its path. Path is computed using a process described later in this document. <span class="todo">treba to niekde opisat</span> Each turtle allocates at most $v_t^{i+1}*l$ patches.</p>
+						<p>Each turtle allocates fields on its own path.</p>
+						<p>In the allocation process, turtle deterministically chooses the next patch accroding to its final direction. Patch in this direction is preferred over other patches which are preferred over patch with the opposite direction.</p>
+						<p>Each turtle allocates at most $v_t^{i+1}*l$ patches.</p>
 						<p>Allocation factor $l$ ensures that turtle yields the right of way if the second turtle is less than $l$ seconds away. In our model we use constant allocation factor $l = 3$.</p>
 					</li>
 					<li>
 						<p><strong>Speed variation:</strong> This step in the original NS model represents the random slowdown of certain turtles. This event is not considered in our model.</p>
 					</li>
 					<li>
-						<p><strong>Movement:</strong> Each turtle is moved ahead according to its velocity, obtaining new position $x_{t}^{(i+1)}$.</p>
+						<p><strong>Movement:</strong> Each turtle is moved $v_t^(i+1)along its allocated path.</p>
 					</li>
 				</ol>
 				<p>&nbsp;</p>
@@ -124,8 +127,8 @@
 					</figure>
 					<p>A first traffic control mechanism analyzed in our model is roundabout.</p>
 					<p>We compare roundabouts of various sizes, described by radius $r$ and lane gap $g$ illustrated in <em>figure 2</em>.</p>
-					<p>A car entering a roundabout randomly chooses it's exit direction using a uniform probabilistic function. Since traffic lights scheme does not allow U-turn (i.e. 180° change in car's direction), we disallow U-turns from all of our model situations.</p>
-					<p>Possible routes of a car coming from the south are illustrated in <em>figure 2</em>.</p>
+					<p>A turtle entering a roundabout randomly chooses it's exit according to the turtle's final direction.</p>
+					<p>Possible routes of a car coming from the south are illustrated in <em>figure 2</em>. Please note a misssing U-turn option.</p>
 					<p>A car entering the roundabout yields the right of way when entering the roundabout at point <em>A</em>.</p>
 					<p>The roundabout patches has higher priority than road patches.</p>
 				</div>
