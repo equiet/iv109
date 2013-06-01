@@ -6,8 +6,7 @@ body {
 	font-size: 1.6em;
 	line-height: 1.8em;
 	color: #333;
-	counter-reset: headings;
-	counter-reset: figures;
+	counter-reset: headings figures;
 }
 
 
@@ -74,7 +73,7 @@ section {
 	}
 
 figure {
-	counter-increment: figures
+	counter-increment: figures;
 }
 	figcaption:before {
 		font-style: italic;
