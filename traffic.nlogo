@@ -18,6 +18,7 @@ patches-own [
   next-patch
   allocated?
   stop?
+  light-color
 ]
 
 turtles-own [
@@ -74,25 +75,29 @@ to make-world
   if ( intersection = "adaptive lights" ) [
     
     ; Make traffic lights
-    ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 3) [
+    ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 1) [
       set patch-type "light"
       set stop? false
-      set pcolor green
+      set light-color green
     ]
-    ask patch (center-xcor - lane-gap) (center-ycor + lane-gap + 3) [
+    ask patch (center-xcor - lane-gap) (center-ycor + lane-gap + 1) [
       set patch-type "light"
       set stop? false
-      set pcolor green
+      set light-color green
     ]
-    ask patch (center-xcor + lane-gap + 3) (center-ycor + lane-gap) [
+    ask patch (center-xcor + lane-gap + 1) (center-ycor + lane-gap) [
       set patch-type "light"
       set stop? true
-      set pcolor red
+      set light-color red
     ]
-    ask patch (center-xcor - lane-gap - 3) (center-ycor - lane-gap) [
+    ask patch (center-xcor - lane-gap - 1) (center-ycor - lane-gap) [
       set patch-type "light"
       set stop? true
-      set pcolor red
+      set light-color red
+    ]
+    
+    ask patches with [ patch-type = "light" ] [
+      set pcolor light-color
     ]
     
     switch-lights
@@ -149,7 +154,7 @@ to draw-roundabout
      ) and
      pycor > 2
   ]
-  draw-road3 north-patches 0 -1 1 low-priority-color
+  draw-road north-patches 0 -1 1 low-priority-color
   
   ; Road from south
   let south-patches patches with [
@@ -159,7 +164,7 @@ to draw-roundabout
      ) and
      pycor < world-height - 2
   ]
-  draw-road3 south-patches 0 1 1 low-priority-color
+  draw-road south-patches 0 1 1 low-priority-color
   
   ; Road from east
   let east-patches patches with [
@@ -169,7 +174,7 @@ to draw-roundabout
      ) and
      pxcor < world-width - 2
   ]
-  draw-road3 east-patches 1 0 1 low-priority-color
+  draw-road east-patches 1 0 1 low-priority-color
   
   ; Road from west
   let west-patches patches with [
@@ -179,7 +184,7 @@ to draw-roundabout
      ) and
      pxcor > 2
   ]
-  draw-road3 west-patches -1 0 1 low-priority-color 
+  draw-road west-patches -1 0 1 low-priority-color 
   
 end
 
@@ -227,7 +232,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pycor > 2 and
      patch-type != "spawn"
   ]
-  draw-road3 north-patches 0 -1 priority1 priority1-color
+  draw-road north-patches 0 -1 priority1 priority1-color
   
   ; Road from south
   let south-patches patches with [
@@ -235,7 +240,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pycor < world-height - 2 and
      patch-type != "spawn"
   ]
-  draw-road3 south-patches 0 1 priority1 priority1-color
+  draw-road south-patches 0 1 priority1 priority1-color
   
   ; Road from east
   let east-patches patches with [
@@ -243,7 +248,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pxcor < world-width - 2 and
      patch-type != "spawn"
   ]
-  draw-road3 east-patches 1 0 priority2 priority2-color
+  draw-road east-patches 1 0 priority2 priority2-color
   
   ; Road from west
   let west-patches patches with [
@@ -251,74 +256,17 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pxcor > 2 and
      patch-type != "spawn"
   ]
-  draw-road3 west-patches -1 0 priority2 priority2-color
+  draw-road west-patches -1 0 priority2 priority2-color
 
 end
 
-to draw-road3 [ fields move-x move-y pr clr ]
+to draw-road [ fields move-x move-y pr clr ]
   ask fields [
     set priority pr
     set pcolor clr
     set next-patch (lput (patch-at move-x move-y) next-patch)
     set next-patch (remove-duplicates next-patch)
   ]
-end
-
-to draw-road2 [ start-x start-y end-x end-y move-x move-y pr clr ]
-  create-turtles 1 [
-    setxy start-x start-y
-    
-    while [ not ( xcor = end-x ) and ( ycor = end-y ) ] [
-      ask patch-here [
-        set priority pr
-        set pcolor clr
-        set next-patch (lput (patch-at move-x move-y) next-patch)
-        set next-patch (remove-duplicates next-patch)
-      ]   
-      setxy (xcor + move-x) (ycor + move-y)
-    ]
-    
-    die
-  ]
-end
-
-to draw-road [start-x start-y move-x move-y ]
-  let i 0
-  let draw? true
-  
-  create-turtles 1 [
-    setxy start-x start-y
-    
-    let section 1
-    
-    while [ i < max-pxcor - 2 ] [
-    
-      ask patch-here [
-     
-        ; Stop drawing at roundabout
-        if ( section = 1 and pcolor = black ) [ set section 2 ] ; Crossing 1
-        if ( section = 2 and pcolor = white ) [ set section 3 ] ; Middle
-        if ( section = 3 and pcolor = black ) [ set section 4 ] ; Crossing 2
-        ;if ( section = 4 and pcolor = white ) [ set section 5 ] ; End
-       
-        if ( section = 1 or section = 4 ) [
-          if ( priority = 0 ) [
-            set pcolor low-priority-color
-            set priority 1
-          ]
-          set next-patch (lput (patch-at move-x move-y) next-patch)
-          set next-patch (remove-duplicates next-patch)
-        ]
-        
-      ]
-      
-      set i (i + 1)  
-      setxy (xcor + move-x) (ycor + move-y)
-    ]
-    
-    die
-  ]
-  
 end
 
 to make-spawn [ loc-x loc-y name ]
@@ -521,11 +469,11 @@ end
 to switch-lights
   if ( intersection = "adaptive lights" ) [
     
-    let red-lights (patches with [ patch-type = "light" and pcolor = red ])
-    let orange-lights (patches with [ patch-type = "light" and pcolor = orange ])
-    let green-lights (patches with [ patch-type = "light" and pcolor = green ])
+    let red-lights (patches with [ patch-type = "light" and light-color = red ])
+    let orange-lights (patches with [ patch-type = "light" and light-color = orange ])
+    let green-lights (patches with [ patch-type = "light" and light-color = green ])
   
-    if (ticks mod (switch-lights-interval + orange-length)) = 0 [
+    if (ticks mod (green-length + orange-length)) = 0 [
           
       ifelse lights-horizontal? [
         draw-adaptive 1 2 low-priority-color high-priority-color
@@ -536,26 +484,30 @@ to switch-lights
     
       ask red-lights [
         set stop? false
-        set pcolor green
+        set light-color green
       ]    
       ask orange-lights [
         set stop? true
-        set pcolor red
+        set light-color red
       ]
       ask green-lights [
         set stop? true
-        set pcolor red
+        set light-color red
       ]
       
     ]
     
-    if (ticks mod (switch-lights-interval + orange-length)) = orange-length [
+    if (ticks mod (green-length + orange-length)) = green-length [
      
       ask green-lights [
         set stop? true
-        set pcolor orange
+        set light-color orange
       ]
       
+    ]
+    
+    ask patches with [ patch-type = "light" ] [
+      set pcolor light-color
     ]
     
   ]
@@ -656,7 +608,7 @@ north-frequency
 north-frequency
 0
 50
-0
+32
 1
 1
 NIL
@@ -671,7 +623,7 @@ south-frequency
 south-frequency
 0
 50
-0
+30
 1
 1
 NIL
@@ -704,7 +656,7 @@ acceleration
 1
 1
 1
-NIL
+m/s^2
 HORIZONTAL
 
 SLIDER
@@ -716,7 +668,7 @@ east-frequency
 east-frequency
 0
 50
-0
+18
 1
 1
 NIL
@@ -725,7 +677,7 @@ VERTICAL
 SLIDER
 908
 71
-1080
+1087
 104
 priority-1-speed
 priority-1-speed
@@ -734,7 +686,7 @@ priority-1-speed
 10
 1
 1
-NIL
+m/s
 HORIZONTAL
 
 SLIDER
@@ -745,11 +697,11 @@ SLIDER
 radius
 radius
 1
-10
-10
+40
+25
 1
 1
-NIL
+m
 HORIZONTAL
 
 SLIDER
@@ -760,11 +712,11 @@ SLIDER
 lane-gap
 lane-gap
 1
-5
-4
+10
 1
 1
-NIL
+1
+m
 HORIZONTAL
 
 SLIDER
@@ -785,7 +737,7 @@ HORIZONTAL
 SLIDER
 910
 123
-1083
+1089
 156
 priority-2-speed
 priority-2-speed
@@ -794,7 +746,7 @@ priority-2-speed
 10
 1
 1
-NIL
+m/s
 HORIZONTAL
 
 CHOOSER
@@ -848,33 +800,33 @@ PENS
 "default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
 
 SLIDER
-910
-175
-1097
-208
-switch-lights-interval
-switch-lights-interval
+909
+173
+1088
+206
+green-length
+green-length
 1
 100
-32
+45
 1
 1
-NIL
+s
 HORIZONTAL
 
 SLIDER
 911
 222
-1083
+1088
 255
 orange-length
 orange-length
 1
 100
-32
+14
 1
 1
-NIL
+s
 HORIZONTAL
 
 BUTTON
