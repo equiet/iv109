@@ -72,7 +72,7 @@ to make-world
   ; 2. Draw intersection
   if ( intersection = "roundabout" ) [ draw-roundabout ]
   if ( intersection = "roundabout-quick-right" ) [ draw-roundabout-quick-right ]
-  if ( intersection = "adaptive lights" ) [
+  if ( intersection = "traffic-lights" ) [
     
     ; Make traffic lights
     ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 1) [
@@ -504,7 +504,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to switch-lights
-  if ( intersection = "adaptive lights" ) [
+  if ( intersection = "traffic-lights" ) [
     
     let red-lights (patches with [ patch-type = "light" and light-color = red ])
     let orange-lights (patches with [ patch-type = "light" and light-color = orange ])
@@ -556,7 +556,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to export
-  export-plot "Average time on road" (word "plots/" intersection "-" north-frequency "-" east-frequency "-" south-frequency "-" west-frequency ".csv")
+  export-plot "Average time on road" (word "plots/" intersection "_" north-frequency "_" east-frequency "_" south-frequency "_" (random 50) ".csv")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -646,7 +646,7 @@ north-frequency
 north-frequency
 0
 50
-0
+50
 1
 1
 NIL
@@ -661,7 +661,7 @@ south-frequency
 south-frequency
 0
 50
-0
+20
 1
 1
 NIL
@@ -676,7 +676,7 @@ west-frequency
 west-frequency
 0
 50
-0
+20
 1
 1
 NIL
@@ -706,7 +706,7 @@ east-frequency
 east-frequency
 0
 50
-34
+20
 1
 1
 NIL
@@ -794,8 +794,8 @@ CHOOSER
 67
 intersection
 intersection
-"roundabout" "roundabout-quick-right" "adaptive lights"
-1
+"roundabout" "roundabout-quick-right" "traffic-lights"
+2
 
 PLOT
 912
@@ -1243,46 +1243,29 @@ NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="3" runMetricsEveryStep="true">
-    <setup>setup</setup>
+  <experiment name="experiment" repetitions="15" runMetricsEveryStep="true">
+    <setup>startup</setup>
     <go>go</go>
-    <timeLimit steps="100"/>
-    <metric>count turtles-on world1</metric>
-    <metric>count turtles-on world2</metric>
+    <final>export</final>
+    <timeLimit steps="1000"/>
+    <enumeratedValueSet variable="intersection">
+      <value value="&quot;roundabout&quot;"/>
+      <value value="&quot;roundabout-quick-right&quot;"/>
+      <value value="&quot;traffic-lights&quot;"/>
+    </enumeratedValueSet>
     <enumeratedValueSet variable="north-frequency">
-      <value value="0"/>
-      <value value="10"/>
       <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
+      <value value="35"/>
       <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="west-frequency">
-      <value value="0"/>
-      <value value="10"/>
       <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="random-color-turtles?">
-      <value value="false"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="south-frequency">
-      <value value="0"/>
-      <value value="10"/>
       <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="east-frequency">
-      <value value="0"/>
-      <value value="10"/>
       <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
