@@ -9,19 +9,12 @@ namespace IV109
         {
             FilePath = path;
 
-            var variables = Path.GetFileNameWithoutExtension(path).Split('-');
-            int offset = 0;
+            var variables = Path.GetFileNameWithoutExtension(path).Split('_');
             Intersection = variables[0];
-            if (variables.Count() > 5)
-            {
-                Intersection = variables[0] + variables[1] + variables[2];
-                offset = 2;
-            }
-
-            North = int.Parse(variables[offset + 1]);
-            East = int.Parse(variables[offset + 2]);
-            South = int.Parse(variables[offset + 3]);
-            West = int.Parse(variables[offset + 4]);
+            North = int.Parse(variables[1]);
+            East = int.Parse(variables[2]);
+            South = int.Parse(variables[3]);
+            West = int.Parse(variables[4]);
         }
 
         public string FilePath { get; set; }
