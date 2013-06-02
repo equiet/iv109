@@ -1,1 +1,3 @@
 plots/*
+csv parser/bin/*
+csv parser/obj/*
