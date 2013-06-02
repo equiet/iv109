@@ -190,37 +190,43 @@ end
 
 to draw-roundabout-quick-right
   draw-roundabout
-
+  
   let i 0
-  let draw? false
+  let previous-patch (patch 0 0)
   let outer-radius (radius + 5)
-  create-turtles 1 [
+  
+  while [ i > -360 ] [ ; Rotate counter-clock-wise
+    set i (i - 1)
+    let continue? true
     
-    while [ i > -360 ] [
-     setxy (center-xcor - round(outer-radius * sin i)) (center-ycor - (outer-radius * cos i))
-     ask patch-here [
-     
-       if ( pxcor = center-xcor - lane-gap ) [ set draw? (pycor > center-ycor) ]
-       if ( pxcor = center-xcor + lane-gap ) [ set draw? (pycor < center-ycor) ]
-       if ( pycor = center-ycor - lane-gap ) [ set draw? (pxcor < center-xcor) ]
-       if ( pycor = center-ycor + lane-gap ) [ set draw? (pxcor > center-xcor) ]
-     
-       if draw? [
-         set pcolor low-priority-color
-       
-         let next-x (center-xcor - round(outer-radius * sin (i - 1)))
-         let next-y (center-ycor - round(outer-radius * cos (i - 1)))
-         set next-patch ( lput (patch next-x next-y) next-patch )
-         set next-patch ( remove-duplicates next-patch )
-         set next-patch ( remove (patch pxcor pycor) next-patch )
-       
-         set priority 1
-       ]
-     ]
-     set i (i - 1)
+    ; Get new patch
+    let current-patch (patch (center-xcor + round(outer-radius * sin i)) (center-ycor + (outer-radius * cos i)))
+    
+    ; Check if patch is really new
+    if (current-patch = previous-patch) [ set continue? false ]
+    
+    ; Check bounds
+    if continue? [
+      if ( [pxcor] of current-patch > center-xcor - lane-gap ) and ( [pxcor] of current-patch < center-xcor + lane-gap ) [
+        set continue? false
+      ]
+      if ( [pycor] of current-patch > center-ycor - lane-gap ) and ( [pycor] of current-patch < center-ycor + lane-gap ) [
+        set continue? false
+      ]
     ]
     
-    die
+    ; Assign new patch
+    if continue? [
+      ask previous-patch [
+         set pcolor low-priority-color
+         set priority 1
+         set next-patch ( lput (current-patch) next-patch )
+         ;set next-patch ( remove-duplicates next-patch )
+         ;set next-patch ( remove (patch pxcor pycor) next-patch )
+      ]
+      set previous-patch current-patch
+    ]
+  
   ]
 end
 
@@ -640,7 +646,7 @@ north-frequency
 north-frequency
 0
 50
-32
+0
 1
 1
 NIL
@@ -700,7 +706,7 @@ east-frequency
 east-frequency
 0
 50
-0
+34
 1
 1
 NIL
@@ -789,7 +795,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "adaptive lights"
-2
+1
 
 PLOT
 912
