@@ -1,6 +1,3 @@
-; TODO
-; premenovat switch-lights-frequency a orange-length na nieco zmysluplne
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Variables
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -9,16 +6,18 @@ globals [
   high-priority-color low-priority-color
   center-xcor center-ycor
   lights-horizontal?
+  lane-gap
 ]
 
 patches-own [
-  patch-type ;; Type of patch, can be "road", "grass", "intersection", "spawn", "light"
-  spawn-location ;; For spawns, can be points of compass
+  patch-type ; Type of patch, can be "road", "grass", "intersection", "spawn", "light"
+  spawn-location ; For spawns, can be points of compass
   priority
   next-patch
   allocated?
   stop?
   light-color
+  max-speed ; Maximum allowed speed on a patch
 ]
 
 turtles-own [
@@ -70,9 +69,18 @@ to make-world
   ]
   
   ; 2. Draw intersection
-  if ( intersection = "roundabout" ) [ draw-roundabout ]
-  if ( intersection = "roundabout-quick-right" ) [ draw-roundabout-quick-right ]
+  if ( intersection = "roundabout" ) [
+    set lane-gap round(radius / 3)
+    draw-roundabout
+  ]
+  if ( intersection = "roundabout-quick-right" ) [
+    set lane-gap round(radius / 3)
+    draw-roundabout-quick-right
+  ]
   if ( intersection = "traffic-lights" ) [
+    ;set lane-gap floor(green-length / 4)
+    ;set lane-gap 5
+    set lane-gap lane-gap2
     
     ; Make traffic lights
     ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 1) [
@@ -104,10 +112,10 @@ to make-world
   ]
   
   ; 4. Draw roads with spawns
-  make-spawn 0 (center-ycor - lane-gap) "west"  
-  make-spawn (world-width - 1) (center-ycor + lane-gap)  "east"  
-  make-spawn (center-xcor - lane-gap) (world-height - 1) "north"
-  make-spawn (center-xcor + lane-gap) 0 "south"
+  make-spawn 1 (center-ycor - lane-gap) "west"  
+  make-spawn (world-width - 2) (center-ycor + lane-gap)  "east"  
+  make-spawn (center-xcor - lane-gap) (world-height - 2) "north"
+  make-spawn (center-xcor + lane-gap) 1 "south"
   
   ; 5. Add center reference point
   ask patch center-xcor center-ycor [
@@ -139,6 +147,7 @@ to draw-roundabout
        set next-patch ( remove-duplicates next-patch )
        set next-patch ( remove (patch pxcor pycor) next-patch )
        set priority 2
+       set max-speed roundabout-circle-speed
      ]
      set i (i + 1)
     ]
@@ -154,7 +163,7 @@ to draw-roundabout
      ) and
      pycor > 2
   ]
-  draw-road north-patches 0 -1 1 low-priority-color
+  draw-road north-patches 0 -1 1 low-priority-color roundabout-road-speed
   
   ; Road from south
   let south-patches patches with [
@@ -164,7 +173,7 @@ to draw-roundabout
      ) and
      pycor < world-height - 2
   ]
-  draw-road south-patches 0 1 1 low-priority-color
+  draw-road south-patches 0 1 1 low-priority-color roundabout-road-speed
   
   ; Road from east
   let east-patches patches with [
@@ -174,7 +183,7 @@ to draw-roundabout
      ) and
      pxcor < world-width - 2
   ]
-  draw-road east-patches 1 0 1 low-priority-color
+  draw-road east-patches 1 0 1 low-priority-color roundabout-road-speed
   
   ; Road from west
   let west-patches patches with [
@@ -184,7 +193,7 @@ to draw-roundabout
      ) and
      pxcor > 2
   ]
-  draw-road west-patches -1 0 1 low-priority-color 
+  draw-road west-patches -1 0 1 low-priority-color roundabout-road-speed
   
 end
 
@@ -221,8 +230,7 @@ to draw-roundabout-quick-right
          set pcolor low-priority-color
          set priority 1
          set next-patch ( lput (current-patch) next-patch )
-         ;set next-patch ( remove-duplicates next-patch )
-         ;set next-patch ( remove (patch pxcor pycor) next-patch )
+         set next-patch ( remove-duplicates next-patch )
       ]
       set previous-patch current-patch
     ]
@@ -230,7 +238,7 @@ to draw-roundabout-quick-right
   ]
 end
 
-to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
+to draw-traffic-lights [ priority1 priority2 priority1-color priority2-color ]
 
   ; Road from north
   let north-patches patches with [
@@ -238,7 +246,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pycor > 2 and
      patch-type != "spawn"
   ]
-  draw-road north-patches 0 -1 priority1 priority1-color
+  draw-road north-patches 0 -1 priority1 priority1-color traffic-lights-speed
   
   ; Road from south
   let south-patches patches with [
@@ -246,7 +254,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pycor < world-height - 2 and
      patch-type != "spawn"
   ]
-  draw-road south-patches 0 1 priority1 priority1-color
+  draw-road south-patches 0 1 priority1 priority1-color traffic-lights-speed
   
   ; Road from east
   let east-patches patches with [
@@ -254,7 +262,7 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pxcor < world-width - 2 and
      patch-type != "spawn"
   ]
-  draw-road east-patches 1 0 priority2 priority2-color
+  draw-road east-patches 1 0 priority2 priority2-color traffic-lights-speed
   
   ; Road from west
   let west-patches patches with [
@@ -262,16 +270,17 @@ to draw-adaptive [ priority1 priority2 priority1-color priority2-color ]
      pxcor > 2 and
      patch-type != "spawn"
   ]
-  draw-road west-patches -1 0 priority2 priority2-color
+  draw-road west-patches -1 0 priority2 priority2-color traffic-lights-speed
 
 end
 
-to draw-road [ fields move-x move-y pr clr ]
+to draw-road [ fields move-x move-y pr clr road-speed ]
   ask fields [
     set priority pr
     set pcolor clr
     set next-patch (lput (patch-at move-x move-y) next-patch)
     set next-patch (remove-duplicates next-patch)
+    set max-speed road-speed
   ]
 end
 
@@ -432,7 +441,7 @@ end
 to-report allocate-patches [ start-patch limit ] ; Reports the distance to the nearest obstacle
 
   if (limit = 0)
-    or (any? other turtles-on start-patch)
+    or ( (any? other turtles-on start-patch) and ([patch-type] of start-patch != "spawn") )
     or ([allocated?] of start-patch)
     or ([stop?] of start-patch)
     [ report 0 ]
@@ -472,18 +481,19 @@ to move-turtles
   ; 1. Increase speed by acceleration constant
   ask turtles [
     set speed (speed + acceleration)
-    if ( priority = 1 ) [ set speed (min list priority-1-speed speed) ]
-    if ( priority = 2 ) [ set speed (min list priority-2-speed speed) ]
+    set speed (min list ([max-speed] of patch-here) (speed + acceleration))
   ]
   
   ; 2. Allocate patches at lookahead distance, or until the nearest obstacle
   ask (turtles-on patches with [ priority = 2 ]) [
-    let nearest-obstacle (allocate-patches patch-here (speed * lookahead-factor))
+    let nearest-obstacle (allocate-patches patch-here (speed * allocation-factor))
     set speed min (list (nearest-obstacle - 1) speed)
+    set speed max (list speed 0)
   ]
   ask (turtles-on patches with [ priority = 1 ]) [
-    let nearest-obstacle (allocate-patches patch-here (speed * lookahead-factor))
+    let nearest-obstacle (allocate-patches patch-here (speed * allocation-factor))
     set speed min (list (nearest-obstacle - 1) speed)
+    set speed max (list speed 0)
   ]
   
   ; 3. No random speed variations
@@ -506,6 +516,9 @@ end
 to switch-lights
   if ( intersection = "traffic-lights" ) [
     
+    let orange-length (lane-gap * 5)
+    ;let orange-length orange-length2
+    
     let red-lights (patches with [ patch-type = "light" and light-color = red ])
     let orange-lights (patches with [ patch-type = "light" and light-color = orange ])
     let green-lights (patches with [ patch-type = "light" and light-color = green ])
@@ -513,9 +526,9 @@ to switch-lights
     if (ticks mod (green-length + orange-length)) = 0 [
           
       ifelse lights-horizontal? [
-        draw-adaptive 1 2 low-priority-color high-priority-color
+        draw-traffic-lights 1 2 low-priority-color high-priority-color
       ] [
-        draw-adaptive 2 1 high-priority-color low-priority-color
+        draw-traffic-lights 2 1 high-priority-color low-priority-color
       ]
       set lights-horizontal? (not lights-horizontal?)
     
@@ -535,6 +548,13 @@ to switch-lights
     ]
     
     if (ticks mod (green-length + orange-length)) = green-length [
+      
+      ifelse not lights-horizontal? [
+        draw-traffic-lights 1 2 low-priority-color high-priority-color
+      ] [
+        draw-traffic-lights 2 1 high-priority-color low-priority-color
+      ]
+      ;set lights-horizontal? (not lights-horizontal?)
      
       ask green-lights [
         set stop? true
@@ -661,7 +681,7 @@ south-frequency
 south-frequency
 0
 50
-20
+50
 1
 1
 NIL
@@ -676,17 +696,17 @@ west-frequency
 west-frequency
 0
 50
-20
+50
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-911
-24
-1083
-57
+856
+39
+1061
+72
 acceleration
 acceleration
 1
@@ -694,7 +714,7 @@ acceleration
 1
 1
 1
-m/s^2
+m/(s^2)
 HORIZONTAL
 
 SLIDER
@@ -706,64 +726,64 @@ east-frequency
 east-frequency
 0
 50
-20
+50
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-908
-71
-1087
-104
+1076
+313
+1255
+346
 priority-1-speed
 priority-1-speed
 1
 20
-10
+8
 1
 1
 m/s
 HORIZONTAL
 
 SLIDER
-1132
-25
-1304
-58
+855
+216
+1061
+249
 radius
 radius
-1
+3
 40
-20
+25
 1
 1
 m
 HORIZONTAL
 
 SLIDER
-1132
-76
-1304
-109
-lane-gap
-lane-gap
+1075
+252
+1247
+285
+lane-gap2
+lane-gap2
 1
 10
-5
+3
 1
 1
 m
 HORIZONTAL
 
 SLIDER
-1136
-130
-1308
-163
-lookahead-factor
-lookahead-factor
+856
+83
+1061
+116
+allocation-factor
+allocation-factor
 1
 10
 3
@@ -773,25 +793,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-910
-123
-1089
-156
+1077
+355
+1256
+388
 priority-2-speed
 priority-2-speed
 1
 20
-10
+14
 1
 1
 m/s
 HORIZONTAL
 
 CHOOSER
-563
-22
-763
-67
+622
+23
+822
+68
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "traffic-lights"
@@ -799,9 +819,9 @@ intersection
 
 PLOT
 912
-284
+429
 1303
-492
+637
 Turtles count
 NIL
 NIL
@@ -821,9 +841,9 @@ PENS
 
 PLOT
 914
-517
+662
 1304
-667
+812
 Average time on road
 NIL
 NIL
@@ -838,30 +858,30 @@ PENS
 "default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
 
 SLIDER
-909
-173
-1088
-206
+1077
+82
+1253
+115
 green-length
 green-length
 1
 100
-45
+25
 1
 1
 s
 HORIZONTAL
 
 SLIDER
-911
-222
-1088
-255
-orange-length
-orange-length
+1077
+128
+1254
+161
+orange-length2
+orange-length2
 1
 100
-35
+50
 1
 1
 s
@@ -885,15 +905,90 @@ NIL
 1
 
 SWITCH
-1134
-180
-1307
-213
+856
+127
+1062
+160
 display-allocation?
 display-allocation?
-0
+1
 1
 -1000
+
+TEXTBOX
+856
+17
+1006
+35
+General settings:
+11
+0.0
+1
+
+TEXTBOX
+856
+191
+1006
+209
+Roundabout settings:
+11
+0.0
+1
+
+SLIDER
+855
+258
+1060
+291
+roundabout-circle-speed
+roundabout-circle-speed
+1
+20
+8
+1
+1
+m/s
+HORIZONTAL
+
+SLIDER
+855
+299
+1061
+332
+roundabout-road-speed
+roundabout-road-speed
+1
+20
+14
+1
+1
+m/s
+HORIZONTAL
+
+TEXTBOX
+1079
+17
+1229
+35
+Traffic lights settings:
+11
+0.0
+1
+
+SLIDER
+1077
+39
+1284
+72
+traffic-lights-speed
+traffic-lights-speed
+1
+20
+12
+1
+1
+m/s
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
