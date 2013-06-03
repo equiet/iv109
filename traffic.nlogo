@@ -230,6 +230,7 @@ to draw-roundabout-quick-right
          set priority 1
          set next-patch ( lput (current-patch) next-patch )
          set next-patch ( remove-duplicates next-patch )
+         set max-speed roundabout-circle-speed
       ]
       set previous-patch current-patch
     ]
@@ -655,7 +656,7 @@ north-frequency
 north-frequency
 0
 50
-0
+43
 1
 1
 NIL
@@ -670,7 +671,7 @@ south-frequency
 south-frequency
 0
 50
-0
+27
 1
 1
 NIL
@@ -685,7 +686,7 @@ west-frequency
 west-frequency
 0
 50
-0
+23
 1
 1
 NIL
@@ -715,7 +716,7 @@ east-frequency
 east-frequency
 0
 50
-0
+33
 1
 1
 NIL
@@ -1305,46 +1306,19 @@ NetLogo 5.0.4
     <enumeratedValueSet variable="intersection">
       <value value="&quot;roundabout&quot;"/>
       <value value="&quot;roundabout-quick-right&quot;"/>
+      <value value="&quot;traffic-lights&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="north-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="west-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="south-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="east-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="radius">
-      <value value="20"/>
-      <value value="30"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
