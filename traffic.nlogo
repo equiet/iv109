@@ -7,6 +7,7 @@ globals [
   center-xcor center-ycor
   lights-horizontal?
   lane-gap
+  green-begin
 ]
 
 patches-own [
@@ -78,9 +79,7 @@ to make-world
     draw-roundabout-quick-right
   ]
   if ( intersection = "traffic-lights" ) [
-    ;set lane-gap floor(green-length / 4)
-    ;set lane-gap 5
-    set lane-gap lane-gap2
+    set lane-gap traffic-lights-gap
     
     ; Make traffic lights
     ask patch (center-xcor + lane-gap) (center-ycor - lane-gap - 1) [
@@ -324,7 +323,7 @@ to car-factory [ location orientation possible-turns ]
       set origin location
       set heading orientation
       set size 3.5
-      set speed priority-1-speed
+      set speed ([max-speed] of patch-here)
       set preferred-turn item (random 3) possible-turns
       ;set preferred-turn item (random 4) (list (list 1 0) (list 0 1) (list -1 0) (list 0 -1))
     ]
@@ -516,9 +515,6 @@ end
 to switch-lights
   if ( intersection = "traffic-lights" ) [
     
-    let orange-length (lane-gap * 5)
-    ;let orange-length orange-length2
-    
     let red-lights (patches with [ patch-type = "light" and light-color = red ])
     let orange-lights (patches with [ patch-type = "light" and light-color = orange ])
     let green-lights (patches with [ patch-type = "light" and light-color = green ])
@@ -548,13 +544,6 @@ to switch-lights
     ]
     
     if (ticks mod (green-length + orange-length)) = green-length [
-      
-      ifelse not lights-horizontal? [
-        draw-traffic-lights 1 2 low-priority-color high-priority-color
-      ] [
-        draw-traffic-lights 2 1 high-priority-color low-priority-color
-      ]
-      ;set lights-horizontal? (not lights-horizontal?)
      
       ask green-lights [
         set stop? true
@@ -580,13 +569,13 @@ to export
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-98
-143
-708
-774
+295
+53
+785
+564
 -1
 -1
-5.0
+4.0
 1
 6
 1
@@ -607,10 +596,10 @@ ticks
 30.0
 
 BUTTON
-19
-20
-96
-53
+15
+18
+78
+51
 NIL
 startup
 NIL
@@ -624,10 +613,10 @@ NIL
 1
 
 BUTTON
-104
-20
-189
-53
+86
+18
+158
+51
 go-once
 go
 NIL
@@ -641,10 +630,10 @@ NIL
 1
 
 BUTTON
-200
-20
-263
-53
+165
+18
+220
+51
 NIL
 go
 T
@@ -658,25 +647,25 @@ NIL
 1
 
 SLIDER
-324
-90
-489
-123
+463
+17
+628
+50
 north-frequency
 north-frequency
 0
 50
-50
+16
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-305
-793
-477
-826
+457
+567
+629
+600
 south-frequency
 south-frequency
 0
@@ -688,25 +677,25 @@ NIL
 HORIZONTAL
 
 SLIDER
-32
-391
-65
-541
+257
+240
+290
+390
 west-frequency
 west-frequency
 0
 50
-50
+31
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-856
-39
-1061
-72
+17
+161
+222
+194
 acceleration
 acceleration
 1
@@ -718,40 +707,25 @@ m/(s^2)
 HORIZONTAL
 
 SLIDER
-748
-377
-781
-527
+793
+241
+826
+391
 east-frequency
 east-frequency
 0
 50
-50
+39
 1
 1
 NIL
 VERTICAL
 
 SLIDER
-1076
-313
-1255
-346
-priority-1-speed
-priority-1-speed
-1
-20
-8
-1
-1
-m/s
-HORIZONTAL
-
-SLIDER
-855
-216
-1061
-249
+17
+332
+223
+365
 radius
 radius
 3
@@ -763,25 +737,25 @@ m
 HORIZONTAL
 
 SLIDER
-1075
-252
-1247
-285
-lane-gap2
-lane-gap2
+16
+632
+223
+665
+traffic-lights-gap
+traffic-lights-gap
 1
 10
-3
+8
 1
 1
 m
 HORIZONTAL
 
 SLIDER
-856
-83
-1061
-116
+17
+205
+222
+238
 allocation-factor
 allocation-factor
 1
@@ -792,36 +766,21 @@ allocation-factor
 NIL
 HORIZONTAL
 
-SLIDER
-1077
-355
-1256
-388
-priority-2-speed
-priority-2-speed
-1
-20
-14
-1
-1
-m/s
-HORIZONTAL
-
 CHOOSER
-622
-23
-822
-68
+15
+75
+220
+120
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "traffic-lights"
-2
+0
 
 PLOT
-912
-429
-1303
-637
+861
+19
+1241
+227
 Turtles count
 NIL
 NIL
@@ -840,10 +799,10 @@ PENS
 "South" 1.0 0 -11085214 true "" "plot count turtles with [origin = \"south\"]"
 
 PLOT
-914
-662
-1304
-812
+861
+238
+1240
+388
 Average time on road
 NIL
 NIL
@@ -858,40 +817,40 @@ PENS
 "default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
 
 SLIDER
-1077
-82
-1253
-115
+16
+542
+224
+575
 green-length
 green-length
 1
 100
-25
+40
 1
 1
 s
 HORIZONTAL
 
 SLIDER
-1077
-128
-1254
-161
-orange-length2
-orange-length2
+16
+588
+224
+621
+orange-length
+orange-length
 1
 100
-50
+10
 1
 1
 s
 HORIZONTAL
 
 BUTTON
-277
-20
-346
-53
+1171
+396
+1240
+429
 NIL
 export
 NIL
@@ -905,10 +864,10 @@ NIL
 1
 
 SWITCH
-856
-127
-1062
-160
+17
+249
+223
+282
 display-allocation?
 display-allocation?
 1
@@ -916,30 +875,30 @@ display-allocation?
 -1000
 
 TEXTBOX
-856
 17
-1006
-35
+139
+167
+157
 General settings:
 11
 0.0
 1
 
 TEXTBOX
-856
-191
-1006
-209
+18
+307
+168
+325
 Roundabout settings:
 11
 0.0
 1
 
 SLIDER
-855
-258
-1060
-291
+17
+373
+222
+406
 roundabout-circle-speed
 roundabout-circle-speed
 1
@@ -951,10 +910,10 @@ m/s
 HORIZONTAL
 
 SLIDER
-855
-299
-1061
-332
+17
+418
+223
+451
 roundabout-road-speed
 roundabout-road-speed
 1
@@ -966,25 +925,25 @@ m/s
 HORIZONTAL
 
 TEXTBOX
-1079
-17
-1229
-35
+18
+477
+168
+495
 Traffic lights settings:
 11
 0.0
 1
 
 SLIDER
-1077
-39
-1284
-72
+16
+499
+223
+532
 traffic-lights-speed
 traffic-lights-speed
 1
 20
-12
+14
 1
 1
 m/s
