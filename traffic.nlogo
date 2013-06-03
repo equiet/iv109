@@ -565,7 +565,7 @@ end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 to export
-  export-plot "Average time on road" (word "plots/" intersection "_" north-frequency "_" east-frequency "_" south-frequency "_" (random 50) ".csv")
+  export-plot "Average time on road" (word "plots/" intersection "_" north-frequency "_" east-frequency "_" south-frequency "_" west-frequency ".csv")
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -655,7 +655,7 @@ north-frequency
 north-frequency
 0
 50
-16
+0
 1
 1
 NIL
@@ -670,7 +670,7 @@ south-frequency
 south-frequency
 0
 50
-50
+0
 1
 1
 NIL
@@ -685,7 +685,7 @@ west-frequency
 west-frequency
 0
 50
-31
+0
 1
 1
 NIL
@@ -715,7 +715,7 @@ east-frequency
 east-frequency
 0
 50
-39
+0
 1
 1
 NIL
@@ -730,7 +730,7 @@ radius
 radius
 3
 40
-25
+20
 1
 1
 m
@@ -1297,7 +1297,7 @@ NetLogo 5.0.4
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="experiment" repetitions="15" runMetricsEveryStep="true">
+  <experiment name="experiment" repetitions="1" runMetricsEveryStep="true">
     <setup>startup</setup>
     <go>go</go>
     <final>export</final>
@@ -1305,21 +1305,46 @@ NetLogo 5.0.4
     <enumeratedValueSet variable="intersection">
       <value value="&quot;roundabout&quot;"/>
       <value value="&quot;roundabout-quick-right&quot;"/>
-      <value value="&quot;traffic-lights&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="north-frequency">
+      <value value="0"/>
+      <value value="10"/>
       <value value="20"/>
-      <value value="35"/>
+      <value value="30"/>
+      <value value="40"/>
       <value value="50"/>
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="west-frequency">
+      <value value="0"/>
+      <value value="10"/>
       <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="south-frequency">
+      <value value="0"/>
+      <value value="10"/>
       <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="east-frequency">
+      <value value="0"/>
+      <value value="10"/>
       <value value="20"/>
+      <value value="30"/>
+      <value value="40"/>
+      <value value="50"/>
+      <value value="60"/>
+    </enumeratedValueSet>
+    <enumeratedValueSet variable="radius">
+      <value value="20"/>
+      <value value="30"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
