@@ -18,26 +18,32 @@ namespace IV109
 
             SaveToFile(files.Where(x => x.North == x.East && x.East == x.South && x.South == x.West),
                         "data-a.csv");
-            
-            /*SaveToFile(files.Where(x => x.North == x.South && x.East == x.West &&
-                                             (x.North == 20 || x.North == 40 || x.North == 60) &&
-                                             (x.East == 5 || x.East == 10 || x.East == 15)
+
+            SaveToFile(files.Where(x => x.North == x.South && x.East == x.West &&
+                                             (x.North >= 20 && x.North < 60) &&
+                                             (x.East >= 5 && x.East < 15)
                                         ),
                         "data-b.csv");
 
             SaveToFile(files.Where(x => x.North == x.East && x.West == x.South &&
-                                             (x.North == 20 || x.North == 40 || x.North == 60) &&
-                                             (x.West == 5 || x.West == 10 || x.West == 15)
+                                             (x.North >= 20 && x.North < 60) &&
+                                             (x.West >= 5 && x.West < 15)
                                         ),
                         "data-c.csv");
 
-            
+
             var runs = new List<Run>();
-            for (int i = 1; i <= 3; i++)
+            for (int i = 5; i < 15; i++)
             {
-                runs.Add(files.First(x => x.North == 20 * i && x.East == 15 * i && x.South == 10 * i && x.West == 5 * i));
+                runs.AddRange(files.Where(x => x.North == 4 * i && x.East == 3 * i && x.South == 2 * i && x.West == 1 * i));
             }
-            SaveToFile(runs, "data-d.csv");*/
+            runs = runs.OrderBy(x => x.Intersection)
+                        .ThenBy(x => x.North)
+                        .ThenBy(x => x.East)
+                        .ThenBy(x => x.South)
+                        .ThenBy(x => x.West)
+                        .ToList();
+            SaveToFile(runs, "data-d.csv");
         }
 
         private static IEnumerable<Run> GetFiles()
@@ -61,7 +67,7 @@ namespace IV109
             {
                 if (previousRun != null && previousRun.Intersection != run.Intersection)
                     runNumber = 1;
-                output.Add(run.ToString(runNumber,Interval, Ticks));
+                output.Add(run.ToString(runNumber, Interval, Ticks));
                 runNumber++;
                 previousRun = run;
             }
