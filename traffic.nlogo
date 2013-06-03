@@ -230,6 +230,7 @@ to draw-roundabout-quick-right
          set priority 1
          set next-patch ( lput (current-patch) next-patch )
          set next-patch ( remove-duplicates next-patch )
+         set max-speed roundabout-circle-speed
       ]
       set previous-patch current-patch
     ]
@@ -655,7 +656,7 @@ north-frequency
 north-frequency
 0
 50
-0
+43
 1
 1
 NIL
@@ -670,7 +671,7 @@ south-frequency
 south-frequency
 0
 50
-0
+27
 1
 1
 NIL
@@ -685,7 +686,7 @@ west-frequency
 west-frequency
 0
 50
-0
+23
 1
 1
 NIL
@@ -715,7 +716,7 @@ east-frequency
 east-frequency
 0
 50
-0
+33
 1
 1
 NIL
@@ -774,7 +775,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "traffic-lights"
-0
+1
 
 PLOT
 861
