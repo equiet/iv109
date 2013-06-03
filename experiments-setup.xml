@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="us-ascii"?><!DOCTYPE experiments SYSTEM "behaviorspace.dtd"><experiments>
+<experiment name="experiment1" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment2" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment3" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment4" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment5" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="50"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="50"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="50"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="50"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment6" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment7" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="5"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="5"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment8" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment9" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment10" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="5"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="5"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment11" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment12" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment13" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="5"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment14" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="40"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="20"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="10"/>
+</enumeratedValueSet>
+</experiment>
+<experiment name="experiment15" repetitions="1" runMetricsEveryStep="true">
+<setup>startup</setup>
+<go>go</go>
+<final>export</final>
+<timeLimit steps="1000"/>
+<enumeratedValueSet variable="intersection">
+    <value value="&quot;roundabout&quot;"/>
+    <value value="&quot;roundabout-quick-right&quot;"/>
+    <value value="&quot;traffic-lights&quot;"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="north-frequency">
+    <value value="60"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="east-frequency">
+    <value value="45"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="south-frequency">
+    <value value="30"/>
+</enumeratedValueSet>
+<enumeratedValueSet variable="west-frequency">
+    <value value="15"/>
+</enumeratedValueSet>
+</experiment>
+</experiments>

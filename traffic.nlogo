@@ -775,7 +775,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "traffic-lights"
-1
+0
 
 PLOT
 861
@@ -1306,46 +1306,19 @@ NetLogo 5.0.4
     <enumeratedValueSet variable="intersection">
       <value value="&quot;roundabout&quot;"/>
       <value value="&quot;roundabout-quick-right&quot;"/>
+      <value value="&quot;traffic-lights&quot;"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="north-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="west-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="south-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
     </enumeratedValueSet>
     <enumeratedValueSet variable="east-frequency">
-      <value value="0"/>
       <value value="10"/>
-      <value value="20"/>
-      <value value="30"/>
-      <value value="40"/>
-      <value value="50"/>
-      <value value="60"/>
-    </enumeratedValueSet>
-    <enumeratedValueSet variable="radius">
-      <value value="20"/>
-      <value value="30"/>
     </enumeratedValueSet>
   </experiment>
 </experiments>
