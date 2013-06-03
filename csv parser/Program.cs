@@ -18,8 +18,8 @@ namespace IV109
 
             SaveToFile(files.Where(x => x.North == x.East && x.East == x.South && x.South == x.West),
                         "data-a.csv");
-
-            SaveToFile(files.Where(x => x.North == x.South && x.East == x.West &&
+            
+            /*SaveToFile(files.Where(x => x.North == x.South && x.East == x.West &&
                                              (x.North == 20 || x.North == 40 || x.North == 60) &&
                                              (x.East == 5 || x.East == 10 || x.East == 15)
                                         ),
@@ -37,12 +37,12 @@ namespace IV109
             {
                 runs.Add(files.First(x => x.North == 20 * i && x.East == 15 * i && x.South == 10 * i && x.West == 5 * i));
             }
-            SaveToFile(runs, "data-d.csv");
+            SaveToFile(runs, "data-d.csv");*/
         }
 
         private static IEnumerable<Run> GetFiles()
         {
-            return System.IO.Directory.GetFiles(PlotsPath, "*.csv")
+            return Directory.GetFiles(PlotsPath, "*.csv")
                             .Select(fileName => new Run(fileName));
         }
 
@@ -50,14 +50,20 @@ namespace IV109
         {
             var output = new List<string>();
 
-            var firstLine = "intersection,north,east,south,west";
+            var firstLine = "intersection,run,north,east,south,west";
             for (int i = 0; i <= Ticks; i += Interval)
                 firstLine += "," + i;
             output.Add(firstLine);
 
+            int runNumber = 1;
+            Run previousRun = null;
             foreach (var run in runs)
             {
-                output.Add(run.ToString(Interval, Ticks));
+                if (previousRun != null && previousRun.Intersection != run.Intersection)
+                    runNumber = 1;
+                output.Add(run.ToString(runNumber,Interval, Ticks));
+                runNumber++;
+                previousRun = run;
             }
 
             File.WriteAllLines(OutputPath + name, output);

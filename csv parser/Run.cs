@@ -24,11 +24,11 @@ namespace IV109
         public int South { get; set; }
         public int West { get; set; }
 
-        public string ToString(int interval, int maxTicks)
+        public string ToString(int runNumber, int interval, int maxTicks)
         {
             var lines = File.ReadAllLines(FilePath).Skip(17);
 
-            string output = string.Format("{0},{1},{2},{3},{4}", Intersection, North, East, South, West);
+            string output = string.Format("{0},{1},{2},{3},{4},{5}", Intersection, runNumber, North, East, South, West);
             foreach (var line in lines)
             {
                 int x; float y;
@@ -44,7 +44,7 @@ namespace IV109
 
         public override string ToString()
         {
-            return ToString(10, 200);
+            return ToString(1, 10, 200);
         }
 
         private void ParseLine(string line, out int x, out float y)
