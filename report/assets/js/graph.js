@@ -1,12 +1,15 @@
 function renderGraph(source, wrapper) {
     var intersections = ["roundabout", "roundabout-quick-right", "traffic-lights"];
     var length = intersections.length;
-    for(var i = 0; i < length; i++) {
+    for(var i = 0; i < length; i++)
         intersections.push(intersections[i] + "-north");
+    for(var i = 0; i < length; i++)
         intersections.push(intersections[i] + "-east");
-        intersections.push(intersections[i] + "-west");
+    for(var i = 0; i < length; i++)
         intersections.push(intersections[i] + "-south");
-    }
+    for(var i = 0; i < length; i++)
+        intersections.push(intersections[i] + "-west");
+
     var traits = [];
     for(var i = 0; i <= 950; i += 20)
         traits.push(i);
@@ -54,7 +57,7 @@ function renderGraph(source, wrapper) {
         .data(intersections)
         .enter().append("svg:g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(" + (i%4 * 300) + ", " + (Math.floor(i/4) * 30 + 530) + ")"; });
+        .attr("transform", function(d, i) { return "translate(" + (i%3 * 400) + ", " + (Math.floor(i/3) * 30 + 530) + ")"; });
 
     legend.append("svg:rect")
         .attr("x", 0)
