@@ -279,7 +279,7 @@ svg {
     stroke: #8CBB4E;
 }
 
-.traffic-lights-right-north {
+.traffic-lights-north {
     stroke: #0000CC;
     stroke-dasharray: 3,3;
     opacity: 0.5;
