@@ -108,6 +108,7 @@ function renderGraph(source, wrapper) {
     }
 
     $(".slider", wrapper).change(function(e) {
+        $("input.slider").val($(this).val());
         foreground.classed("fade", function(d) {
             if(d["run"] == $(".slider", wrapper).val()) {
                 $('.north', wrapper).text(d['north']);
