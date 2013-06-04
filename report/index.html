@@ -41,7 +41,7 @@
 			<p>We use a cellular automaton model to simulate 3 types of intersections - (1) simple roundabout, (2) roundabout with quick right turn and (3) basic traffic lights.</p>
 			<p>We analyze traffic flow dynamics of each intersection, finding their optimal use cases. We compare these traffic control systems in terms of their efficiency at usual traffic flow metrics such as <em>average time spent in the intersection</em>.</p>
 			<p>The model consists of 2 perpendicular roads each with 2 lanes (totaling 4 directions), intersection control system and cars as homogenous agents.</p>
-			<p>For this task we use NetLogo simulation software. Source code of our simulation is attached in the document.</p>
+			<p>For this task we use NetLogo simulation software.</p>
 
 		</div>
 	</section>
@@ -297,9 +297,9 @@
 			
 			<h2>Summary</h2>
 
-			<p>While many optimizations are possible, they come at price of decreased flexibility. NetLogo's inexpressible syntax and lack of advanced data structures</p>
+			<p>Design of intersections is one of the most important aspects of effective traffic control in both urban and rural areas.</p>
 
-			<aside>
+			<aside class="aside-right possible-extensions">
 				<h3>Possible extensions</h3>
 				<p>Modeling under realistic conditions can quickly become extremely complex.</p>
 				<p>We needed to simplify our model in such ways that diverge from the real world as little as possible while maintaning flexibility and performance of our models.</p>
@@ -309,6 +309,16 @@
 				<p>Another possible extension is to include pedestrians into our model. According to the 1994 before-and-after study conducted in Netherlands<sup>4</sup>, roundabouts result in 89% less pedestrian injuries. In roundabouts, greater safety is achieved through artificial obstacle, i.e. central island, effectively lowering speed of the vehicles<sup>5</sup>.</p>
 				<p>Other possible extensions include environmental impact, aesthetics and building costs.</p>
 			</aside>
+
+			<p>Years of research and experiments put roundabouts in favor of other traditional control mechanisms such as traffic lights.</p>
+			<p>Not surprisingly we see a wide adoption of roundabouts in the recent years. Despite the initial doubt and distrust, roundabouts came into liking of the general public<sup>5</sup>.</p>
+			<p>Roundabouts generally lead to a higher safety and increased efficiency, yet our simulation was not such clear in this aspect.</p>
+			<p>Simple roundabout fared better than traffic lights in only 1 of 4 simulated scenarios. On the other hand, modified roundabout with quick right turn outperformed other schemes in all scenarios.</p>
+			<p>Our findings cannot be considered convincing in declaring either traffic lights or roundabout to be superior in terms of efficiency than the other modeled scheme.</p>
+			<p>Further evaluation is due, requiring more realistic environment discussed in the <em>Possible Extensions</em> section.</p>
+			<p>Both more realistic environment and higher accuracy can be achieved through advanced or even specialized simulation software. Specialized software such as TransModeler<sup>[6]</sup> is being used in professional environment.</p>
+			<p>During simulations, we have encountered many performance issues. These were amplified by the limitations of NetLogo development environment as well as its own scripting language.</p>
+			
 		</div>
 	</section>
 
@@ -323,6 +333,7 @@
 				<li>http://arxiv.org/pdf/cond-mat/0309560v2.pdf</li>
 				<li>Schoon, C., and J. van Minnen, "The Safety of Roundabouts in the Netherlands," SWOV Institute for Road Safety Research, Traffic Engineering and Control (March 1994).</li>
 				<li>http://onlinepubs.trb.org/Onlinepubs/nchrp/nchrp_syn_264.pdf</li>
+				<li>http://www.caliper.com/transmodeler/</li>
 			</ol>
 
 			<ul>

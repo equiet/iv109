@@ -76,8 +76,8 @@ function renderGraph(source, wrapper) {
         .selectAll("path")
         .data(rows)
         .enter().append("svg:path")
-        .attr("d", path)
-        .attr("class", function(d) { return d.intersection + (d.run == $(".slider", wrapper).val() ? "" : " fade"); });
+            .attr("d", path)
+            .attr("class", function(d) { return d.intersection + (d.run == $(".slider", wrapper).val() ? "" : " fade"); });
 
     for(var i = 0; i < rows.length; i++) {
         if(rows[i]['run'] == $(".slider", wrapper).val()) {

@@ -125,8 +125,15 @@ section {
 	float: left;
 	margin: 2em 3em 2em -100px;
 }
+.aside-right {
+	float: right;
+	margin: 2em -100px 2em 3em;
+}
 	aside.patches-distance {
 		width: 184px;
+	}
+	aside.possible-extensions {
+		width: 400px;
 	}
 
 
@@ -176,11 +183,20 @@ hr {
 	padding: 0.4em 0.8em;
 	border: 1px solid rgba(0,0,0,0.1);
 	border-radius: 5px;
+	font-family: "Helvetica", sans-serif;
+	font-size: 14px;
 }
+	.slider-wrapper span {
+		font-weight: bold;
+		display: inline-block;
+		width: 2em;
+		text-align: left;
+	}
 	.slider {
 		width: 300px;
 		vertical-align: middle;
 		margin-right: 6px;
+		margin-right: 2em;
 	}
 
 svg {
