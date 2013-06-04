@@ -223,7 +223,7 @@ svg {
 .traffic-lights-east,
 .traffic-lights-south,
 .traffic-lights-west {
-    stroke: #8CBB4E;
+    stroke: green;
 }
 
 .roundabout,
@@ -231,7 +231,7 @@ svg {
 .roundabout-east,
 .roundabout-south,
 .roundabout-west {
-    stroke: #1D72AA;
+    stroke: blue;
 }
 
 .roundabout-quick-right,
@@ -239,7 +239,7 @@ svg {
 .roundabout-quick-right-east,
 .roundabout-quick-right-south,
 .roundabout-quick-right-west {
-    stroke: #C44440;
+    stroke: red;
 }
 
 .traffic-lights-north,
