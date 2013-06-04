@@ -13,6 +13,13 @@
 		});
 	</script>
 
+	<script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="assets/js/graph.js"></script>
+	<script src="assets/js/strategy-a.js"></script>
+	<script src="assets/js/strategy-b.js"></script>
+	<script src="assets/js/strategy-c.js"></script>
+	<script src="assets/js/strategy-d.js"></script>
 </head>
 <body>
 	<article class="container">
@@ -167,8 +174,64 @@
 		</section>
 
 		<section>
+			<h2>Analysis</h2>
+			<h3>Strategy 25/25/25/25</h3>
+			<div id="graph-a">
+				<div>
+			        <input class="slider" type="range" min="1" max="26" step="1" width="300" value="1">
+			        North: <span class="north"></span>
+			        East: <span class="east"></span>
+			        South: <span class="south"></span>
+			        West: <span class="west"></span>
+			    </div>
+			</div>
+			<script type="text/javascript">
+				renderGraph(strategyA, "#graph-a");
+			</script>
+			<h3>Strategy 40/10/40/10</h3>
+			<div id="graph-b">
+				<div>
+			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+			        North: <span class="north"></span>
+			        East: <span class="east"></span>
+			        South: <span class="south"></span>
+			        West: <span class="west"></span>
+			    </div>
+			</div>
+			<script type="text/javascript">
+				renderGraph(strategyB, "#graph-b");
+			</script>
+			<h3>Strategy 40/40/10/10</h3>
+			<div id="graph-c">
+				<div>
+			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+			        North: <span class="north"></span>
+			        East: <span class="east"></span>
+			        South: <span class="south"></span>
+			        West: <span class="west"></span>
+			    </div>
+			</div>
+			<script type="text/javascript">
+				renderGraph(strategyC, "#graph-c");
+			</script>
+			<h3>Strategy 40/30/20/10</h3>
+			<div id="graph-d">
+				<div>
+			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+			        North: <span class="north"></span>
+			        East: <span class="east"></span>
+			        South: <span class="south"></span>
+			        West: <span class="west"></span>
+			    </div>
+			</div>
+			<script type="text/javascript">
+				renderGraph(strategyD, "#graph-d");
+			</script>
+		</section>
+
+		<section>
 			<h2>Summary</h2>
-			<p> While many optimizations are possible, they come at price of decreased flexibility. NetLogo's inexpressible syntax and lack of advanced data structures</p>
+			<p>While many optimizations are possible, they come at price of decreased flexibility. NetLogo's inexpressible syntax and lack of advanced data structures</p>
 		</section>
 
 		<section>
