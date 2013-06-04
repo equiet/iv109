@@ -775,7 +775,7 @@ CHOOSER
 intersection
 intersection
 "roundabout" "roundabout-quick-right" "traffic-lights"
-0
+2
 
 PLOT
 861
@@ -816,10 +816,10 @@ true
 "" ""
 PENS
 "All" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
-"West" 1.0 0 -955883 true "" "if (count turtles with [origin = \"west\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"west\"] ]"
 "North" 1.0 0 -2674135 true "" "if (count turtles with [origin = \"north\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"north\"] ]"
 "East" 1.0 0 -13791810 true "" "if (count turtles with [origin = \"east\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"east\"] ]"
 "South" 1.0 0 -13840069 true "" "if (count turtles with [origin = \"south\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"south\"] ]"
+"West" 1.0 0 -955883 true "" "if (count turtles with [origin = \"west\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"west\"] ]"
 
 SLIDER
 16
