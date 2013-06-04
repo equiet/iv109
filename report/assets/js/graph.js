@@ -4,7 +4,8 @@ function renderGraph(source, wrapper) {
     for(var i = 0; i <= 950; i += 20)
         traits.push(i);
 
-    var m = [80, 160, 200, 40];
+    //var m = [80, 160, 200, 40];
+    var m = [40, 50, 200, 50];
     var w = 1200 - m[1] - m[3];
     var h = 720 - m[0] - m[2];
 
@@ -47,15 +48,17 @@ function renderGraph(source, wrapper) {
         .data(intersections)
         .enter().append("svg:g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 524) + ")"; });
+        .attr("transform", function(d, i) { return "translate(0, " + (i * 30 + 530) + ")"; });
 
-    legend.append("svg:line")
-        .attr("class", String)
-        .attr("x2", 8);
+    legend.append("svg:rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("class", String);
 
     legend.append("svg:text")
-        .attr("x", 12)
-        .attr("dy", ".31em")
+        .attr("transform", "translate(30, 15)")
         .text(function(d) { return d; });
 
     // Add foreground lines.

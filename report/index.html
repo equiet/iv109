@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>TODO</title>
+	<title>Microsimulation and Analysis of Vehicular Traffic Control Designs</title>
 
 	<link rel="stylesheet" href="assets/main.css">
 
@@ -14,7 +14,7 @@
 	</script>
 
 	<script src="http://code.jquery.com/jquery-2.0.2.min.js"></script>
-	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="assets/d3.v3/d3.v3.js"></script>
 	<script src="assets/js/graph.js"></script>
 	<script src="assets/js/strategy-a.js"></script>
 	<script src="assets/js/strategy-b.js"></script>
@@ -27,7 +27,7 @@
 		<div class="layout">
 
 			<header>
-				<h1>Microsimulation and Traffic Flow Analysis at Roundabouts and Traffic Lights</h1>
+				<h1>Microsimulation and Analysis of Vehicular Traffic Control Designs</h1>
 				<p class="authors">Jakub Jurových, Peter Sandtner</p>
 			</header>
 
@@ -39,9 +39,9 @@
 		<div class="layout">
 
 			<p>We use a cellular automaton model to simulate 3 types of intersections - (1) simple roundabout, (2) roundabout with quick right turn and (3) basic traffic lights.</p>
-			<p>We analyze the traffic flow dynamics of each intersections, finding bounds of their optimal use cases. We compare these traffic control systems in terms of their efficiency at usual traffic flow metrics such as <em>average time spent in the intersection</em> and <em>intersection throughput</em>.</p>
-			<p>The model consists of 2 perpendicular roads each with 2 lanes (totaling 4 directions), intersection control system and homogenous agents representing cars.</p>
-			<p>For this task we used NetLogo simulation software. Source code of our simulation is attached in the document.</p>
+			<p>We analyze traffic flow dynamics of each intersection, finding their optimal use cases. We compare these traffic control systems in terms of their efficiency at usual traffic flow metrics such as <em>average time spent in the intersection</em>.</p>
+			<p>The model consists of 2 perpendicular roads each with 2 lanes (totaling 4 directions), intersection control system and cars as homogenous agents.</p>
+			<p>For this task we use NetLogo simulation software. Source code of our simulation is attached in the document.</p>
 
 		</div>
 	</section>
@@ -49,9 +49,9 @@
 
 	<section class="introduction">
 		<div class="layout">
-
 			<h2>Introduction</h2>
-
+		</div>
+		<div class="layout two-columns">
 			<p>During the past few decades we have seen a wide adoption of alternative traffic control schemes, especially roundabouts.</p>
 			<p>Traffic management is becoming extremely complex due to overloaded communications and predicting the traffic flow cannot be considered reliable.</p>
 			<p>A need for flexibility has lead to innovative traffic control mechanisms.</p>
@@ -59,36 +59,39 @@
 			<p>Despite the promising results of roundabout scheme, we still encounter mostly traffic lights, which are typical for dense urban areas.
 			<p>We set out to explore a very limited amount of these two traffic control mechanisms in simplified conditions.</p>
 			<p>Our focus is solely on efficieny, not considering additional problems such as environmental impact or general safety.</p>
-
 		</div>
 	</section>
 
 
 	<section class="problem">
 		<div class="layout">
-
-			<h2>The problem</h2>
-
+			<h2>The Problem</h2>
+		</div>
+		<div class="layout two-columns">
 			<p>Traffic simulation can become highly complex, considering many factors such as acceleration, yield-of-way-rules and speed regulation.</p>
 			<p>A general objective of keeping the traffic flow on a highest level possible might be misleading.</p>
 			<p>Despite the symmetric nature of our targeted intersections, traffic flow from one direction can be effectively throttled by another road.</p>
 			<p>Our objective is to analyze several traffic situations of various traffic loads and determine the best control scheme under these conditions.</p>
 			<p>We try to understand the traffic flow limits of each of these situations.</p>
-			
 		</div>
 	</section>
 
 
 	<section class="model">
 		<div class="layout">
-
 			<h2>Construction of the Model</h2>
-		
-			<figure>
-				<img src="assets/images/patches.png" alt="">
-				<figcaption>Distance between patches $|AB| = |AC| = |AD| = 1 m$</figcaption>
-			</figure>
+
+		</div>
+
+		<div class="layout">
+
 			<p>The simulated world consists of a grid of 120x120 patches. Travelling distance from a patch to all is neighbours represents 1 meter in the real world (see fig. 1).</p>
+			<aside class="aside-left patches-distance">
+				<figure>
+					<img src="assets/images/patches.png" alt="">
+					<figcaption>Distance between patches $|AB| = |AC| = |AD| = 1 m$</figcaption>
+				</figure>
+			</aside>
 			<p>As a base for our computations, we consider the smallest discrete time interval (aka <em>tick</em>) to be <strong>1 second</strong> in the real world.</p>
 			<p>Cars are homogenous agents, represented using NetLogo's <em>turtles</em>. Each turtle moves n patches over 1 second, where n is it's current speed.</p>
 			<p>Turtles are allowed to move only on <em>road</em> patches. Each <em>road</em> patch has a static variable <em>priority</em> used for determining the right-of-way rules.</p>
@@ -126,20 +129,22 @@
 					<p>Maximum speed of the road is fixed $14 m/s$, representing $\sim 50\ km/h$ in the real world.</p>
 					<p>Due to the two-dimensional space (instead of just one-dimensional found in NS model) we need to introduce a process of patch allocation.</p>
 					<p>The allocation process may introduce nondeterministic behaviour in two-dimensional space. To achieve a deterministic behavior, we need to execute the slowdown and allocation in an ordered manner. Turtles in this process are partially ordered using the priority of their current patch, which can be either $1$ (executed later) or $2$ (executed sooner).</p>
-					<figure>
-						<img src="assets/images/priorities.png" alt="">
-						<figcaption>Black patches in our simulation represent high-priority road. Grey patches represent low-priority road.</figcaption>
-					</figure>
+					<aside class="aside-left">
+						<figure>
+							<img src="assets/images/priorities.png" alt="">
+							<figcaption>Black patches in our simulation represent high-priority road. Grey patches represent low-priority road.</figcaption>
+						</figure>
+					</aside>
 					<p>Each turtle allocates fields on its own path.</p>
 					<p>In the allocation process, turtle deterministically chooses the next patch accroding to its final direction. Patch in this direction is preferred over other patches which are preferred over patch with the opposite direction.</p>
-					<p>Each turtle allocates at most $v_t^{i+1}*l$ patches.</p>
+					<p>Each turtle allocates at most $v_t^{(i+1)} \times l$ patches.</p>
 					<p>Allocation factor $l$ ensures that turtle yields the right of way if the second turtle is less than $l$ seconds away. In our model we use constant allocation factor $l = 3$.</p>
 				</li>
 				<li>
 					<p><strong>Speed variation:</strong> This step in the original NS model represents the random slowdown of certain turtles. This event is not considered in our model.</p>
 				</li>
 				<li>
-					<p><strong>Movement:</strong> Each turtle is moved $v_t^(i+1)along its allocated path.</p>
+					<p><strong>Movement:</strong> Each turtle is moved $v_t^{(i+1)}$ patches along its allocated path.</p>
 				</li>
 			</ol>
 			
@@ -158,7 +163,8 @@
 					<figcaption>Classic roundabout</figcaption>
 				</figure>
 				<p>A first traffic control mechanism analyzed in our model is roundabout.</p>
-				<p>We compare roundabouts of various sizes, described by radius $r$ and lane gap $g = r/6$ illustrated in <em>figure 2</em>.
+				<p>We compare roundabouts of various sizes, described by radius $r$ and lane gap $g = r/6$ illustrated in <em>figure 2</em>.</p>
+				<p>In our simulations, we use fixed $r = 20m$.</p>
 				<p>A turtle entering a roundabout randomly chooses it's exit according to the turtle's final direction.</p>
 				<p>Possible routes of a car coming from the south are illustrated in <em>figure 2</em>. Please note the missing U-turn option.</p>
 				<p>A car entering the roundabout yields the right of way when entering the roundabout at point <em>A</em>.</p>
@@ -175,7 +181,7 @@
 				<p>Another modeled scheme is a Roundabout with a quick right turn. This is a variation of a Classic roundabout control scheme.</p>
 				<p>In this model, a car with an intent of right turn does not enter roundabout at all. Instead, it uses separate road to decrease the load of the roundabout.</p>
 				<p>Road metrics introduced in Classic roundabout also hold in this model. Radius of right turn $r_{outer}$ is 5 meters higher than roundabout radius $r_{inner}$.</p>
-				<p>$r_{outer} = r_{inner} + 5$</p>
+				<p>$r_{outer} = r_{inner} + 5 m = 25 m$</p>
 			</div>
 
 			<div class="one-third">
@@ -198,61 +204,73 @@
 
 	<section class="analysis">
 		<div class="layout">
-
 			<h2>Analysis</h2>
+			<p>For our simulations we have created 4 scenarios, each with its characteristic distribution of traffic flow across possible turtle origins.</p>
+			<p>Simulations were executed under different load levels.</p>
+			<p>As the metric we use <strong>average time on road</strong> for currently existing turtles. Since one traffic flow from certain direction can have a significant impact on another flow, we count the average time for each direction separately.</p>
+		</div>
+		<hr>
+		<div class="layout">
+			<div class="scenario">
+				<h3>Strategy 25/25/25/25</h3>
+				<div id="graph-a" class="graph">
+					<div>
+				        <input class="slider" type="range" min="1" max="26" step="1" width="300" value="1">
+				        North: <span class="north"></span>
+				        East: <span class="east"></span>
+				        South: <span class="south"></span>
+				        West: <span class="west"></span>
+				    </div>
+				</div>
+				<script type="text/javascript">
+					renderGraph(strategyA, "#graph-a");
+				</script>
+			</div>
 
-			<h3>Strategy 25/25/25/25</h3>
-			<div id="graph-a">
-				<div>
-			        <input class="slider" type="range" min="1" max="26" step="1" width="300" value="1">
-			        North: <span class="north"></span>
-			        East: <span class="east"></span>
-			        South: <span class="south"></span>
-			        West: <span class="west"></span>
-			    </div>
+			<div class="scenario">
+				<h3>Strategy 40/10/40/10</h3>
+				<div id="graph-b" class="graph">
+					<div>
+				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+				        North: <span class="north"></span>
+				        East: <span class="east"></span>
+				        South: <span class="south"></span>
+				        West: <span class="west"></span>
+				    </div>
+				</div>
+				<script type="text/javascript">
+					renderGraph(strategyB, "#graph-b");
+				</script>
 			</div>
-			<script type="text/javascript">
-				renderGraph(strategyA, "#graph-a");
-			</script>
-			<h3>Strategy 40/10/40/10</h3>
-			<div id="graph-b">
-				<div>
-			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
-			        North: <span class="north"></span>
-			        East: <span class="east"></span>
-			        South: <span class="south"></span>
-			        West: <span class="west"></span>
-			    </div>
+
+			<div class="scenario">
+				<h3>Strategy 40/40/10/10</h3>
+				<div id="graph-c" class="graph">
+					<div>
+				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+				        North: <span class="north"></span>
+				        East: <span class="east"></span>
+				        South: <span class="south"></span>
+				        West: <span class="west"></span>
+				    </div>
+				</div>
+				<script type="text/javascript">
+					renderGraph(strategyC, "#graph-c");
+				</script>
+				<h3>Strategy 40/30/20/10</h3>
+				<div id="graph-d" class="graph">
+					<div>
+				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
+				        North: <span class="north"></span>
+				        East: <span class="east"></span>
+				        South: <span class="south"></span>
+				        West: <span class="west"></span>
+				    </div>
+				</div>
+				<script type="text/javascript">
+					renderGraph(strategyD, "#graph-d");
+				</script>
 			</div>
-			<script type="text/javascript">
-				renderGraph(strategyB, "#graph-b");
-			</script>
-			<h3>Strategy 40/40/10/10</h3>
-			<div id="graph-c">
-				<div>
-			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
-			        North: <span class="north"></span>
-			        East: <span class="east"></span>
-			        South: <span class="south"></span>
-			        West: <span class="west"></span>
-			    </div>
-			</div>
-			<script type="text/javascript">
-				renderGraph(strategyC, "#graph-c");
-			</script>
-			<h3>Strategy 40/30/20/10</h3>
-			<div id="graph-d">
-				<div>
-			        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
-			        North: <span class="north"></span>
-			        East: <span class="east"></span>
-			        South: <span class="south"></span>
-			        West: <span class="west"></span>
-			    </div>
-			</div>
-			<script type="text/javascript">
-				renderGraph(strategyD, "#graph-d");
-			</script>
 			
 		</div>
 	</section>

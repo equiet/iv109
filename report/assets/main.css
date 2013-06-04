@@ -10,16 +10,24 @@ body {
 	line-height: 1.8em;
 	color: rgb(9, 31, 37);
 	padding: 2em;
-	counter-reset: headings figures;
+	counter-reset: headings figures schemes;
 }
 
 
 h1, h2, h3, h4 {
 	font-weight: normal;
 }
+	h2 {
+		margin-bottom: 0;
+		padding-bottom: 1em;
+	}
 
 p {
 	text-align: justify;
+}
+
+figure {
+	margin: 0;
 }
 
 
@@ -74,18 +82,6 @@ section {
 	}
 
 
-.introduction .layout,
-.problem .layout,
-.model .layout {
-	-webkit-column-count: 2;
-	-webkit-column-gap: 4rem;
-}
-
-
-.movement .layout {
-	
-}
-
 .intersections .layout {
 }
 	.one-third {
@@ -95,21 +91,43 @@ section {
 		.layout .one-third:nth-child(3) {
 			margin: 0 5%
 		}
-	.intersections figure {
-		margin: 0;
+	.intersections h3 {
+		font-size: 1.1em;
+		counter-increment: schemes;
 	}
+		.intersections h3:before {
+			color: #999;
+			content: counter(schemes) ". ";
+		}
 
 .analysis .layout {
-	
 }
+	.scenario {
+	}
+		.scenario .graph {
+			text-align: center;
+			margin: 0 -100px;
+		}
 
 .summary .layout {
 	
 }
 
-.resources .layout {
-	
+
+
+.two-columns {
+	-webkit-column-count: 2;
+	-webkit-column-gap: 4rem;
 }
+
+
+.aside-left {
+	float: left;
+	margin: 2em 3em 2em -100px;
+}
+	aside.patches-distance {
+		width: 184px;
+	}
 
 
 
@@ -130,11 +148,27 @@ figure {
 	figure img {
 		max-width: 100%;
 	}
+	figcaption {
+		font-size: 0.9em;
+	}
 	figcaption:before {
 		font-style: italic;
 		font-weight: bold;
 		content: "Fig. " counter(figures) ": ";
 	}
+
+hr {
+	border: none;
+	border-top: 1px solid rgba(0,0,0,0.1);
+	margin: 5em 0;
+}
+
+
+
+/* ******************************
+ * Graphs
+ * ****************************** */
+
 
 .slider {
 	vertical-align: middle;
@@ -142,8 +176,14 @@ figure {
 }
 
 svg {
-    font-size: 14px;
+    font-size: 11px;
 }
+	svg text {
+		fill: rgba(0,0,0,0.5);
+	    font-family: "Helvetica", sans-serif;
+	    font-style: normal;
+	    font-weight: bold;
+	}
 
 .foreground path {
     fill: none;
@@ -158,23 +198,25 @@ svg {
 
 .legend {
     font-size: 18px;
-    font-style: oblique;
 }
 
 .legend line {
-    stroke-width: 2px;
+    stroke-width: 20px;
 }
 
 .roundabout {
-    stroke: #800;
+    fill: #1D72AA;
+    stroke: #1D72AA;
 }
 
 .roundabout-quick-right {
-    stroke: #080;
+    fill: #C44440;
+    stroke: #C44440;
 }
 
 .traffic-lights {
-    stroke: #008;
+    fill: #8CBB4E;
+    stroke: #8CBB4E;
 }
 
 .brush .extent {
