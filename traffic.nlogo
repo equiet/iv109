@@ -803,7 +803,7 @@ PLOT
 861
 238
 1240
-388
+418
 Average time on road
 NIL
 NIL
@@ -812,10 +812,14 @@ NIL
 0.0
 10.0
 true
-false
+true
 "" ""
 PENS
-"default" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
+"All" 1.0 0 -16777216 true "" "if (count turtles > 0 ) [ plot mean [ticks-alive] of turtles ]"
+"West" 1.0 0 -955883 true "" "if (count turtles with [origin = \"west\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"west\"] ]"
+"North" 1.0 0 -2674135 true "" "if (count turtles with [origin = \"north\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"north\"] ]"
+"East" 1.0 0 -13791810 true "" "if (count turtles with [origin = \"east\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"east\"] ]"
+"South" 1.0 0 -13840069 true "" "if (count turtles with [origin = \"south\"] > 0 ) [ plot mean [ticks-alive] of turtles with [origin = \"south\"] ]"
 
 SLIDER
 16
@@ -848,10 +852,10 @@ s
 HORIZONTAL
 
 BUTTON
-1171
-396
-1240
+1169
 429
+1238
+462
 NIL
 export
 NIL
