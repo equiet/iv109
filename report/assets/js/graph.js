@@ -4,9 +4,9 @@ function renderGraph(source, wrapper) {
     for(var i = 0; i <= 950; i += 20)
         traits.push(i);
 
-    var m = [80, 160, 200, 10];
+    var m = [80, 160, 200, 40];
     var w = 1200 - m[1] - m[3];
-    var h = 800 - m[0] - m[2];
+    var h = 720 - m[0] - m[2];
 
     var x = d3.scale.ordinal().domain(traits).rangePoints([0, w]);
     var y = {};
@@ -34,7 +34,7 @@ function renderGraph(source, wrapper) {
                 .range([h, 0]);
         } else {
             y[d] = d3.scale.linear()
-                .domain([0, 400])
+                .domain([0, 350])
                 .range([h, 0]);
         }
 
@@ -47,7 +47,7 @@ function renderGraph(source, wrapper) {
         .data(intersections)
         .enter().append("svg:g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 584) + ")"; });
+        .attr("transform", function(d, i) { return "translate(0," + (i * 20 + 524) + ")"; });
 
     legend.append("svg:line")
         .attr("class", String)
