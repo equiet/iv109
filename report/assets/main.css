@@ -1,11 +1,14 @@
+* {
+	box-sizing: border-box;
+}
 html { 
 	font-size: 62.5%;
 }
 body {
 	font-family: 'Cambria', 'Georgia', serif;
-	font-size: 1.6em;
+	font-size: 1.5em;
 	line-height: 1.8em;
-	color: #333;
+	color: rgb(9, 31, 37);
 	padding: 2em;
 	counter-reset: headings figures;
 }
@@ -21,13 +24,13 @@ p {
 
 
 section {
-	padding: 5em 0;
+	padding: 6em 0;
 }
 	section:nth-child(2n) {	
-		background: rgb(245,245,245);
+		background: rgb(240, 244, 245);
 	}
 	.layout {
-		max-width: 900px;
+		max-width: 1200px;
 		padding: 0 100px;
 		margin: 0 auto;
 	}
@@ -37,6 +40,8 @@ section {
 			clear: both;
 		}
 	section h2 {
+		font-size: 1.8em;
+		color: rgb(235, 21, 21);
 		counter-increment: headings;
 	}
 		section h2:before {
@@ -47,7 +52,6 @@ section {
 .title {
 	text-align: center;
 	padding: 8em 0;
-	background: rgb(225,225,225);
 	
 }
 	.title h1 {
@@ -62,10 +66,11 @@ section {
 
 
 .abstract {
+	font-style: italic;
+	font-size: 1.1em;
 }
 	.abstract .layout {
-		padding: 0 5em;
-		font-size: 1.1em;
+		padding: 0 10em;
 	}
 
 
