@@ -136,7 +136,10 @@ figure {
 		content: "Fig. " counter(figures) ": ";
 	}
 
-
+.slider {
+	vertical-align: middle;
+	margin-right: 6px;
+}
 
 svg {
     font-size: 14px;
