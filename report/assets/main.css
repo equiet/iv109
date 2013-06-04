@@ -218,90 +218,55 @@ svg {
 	}
 
 
-
-.roundabout {
-    stroke: #1D72AA;
-}
-
-.roundabout-north {
-    stroke: #CC3300;
-    stroke-dasharray: 3,3;
-    opacity: 0.5;
-}
-
-.roundabout-east {
-    stroke: #CC3300;
-    stroke-dasharray: 10,10;
-    opacity: 0.5;
-}
-
-.roundabout-south {
-    stroke: #CC3300;
-    stroke-dasharray: 20,10,5,5,5,10;
-    opacity: 0.5;
-}
-
-.roundabout-west {
-    stroke: #CC3300;
-    stroke-dasharray: 30,6,0,6;
-    opacity: 0.5;
-}
-
-.roundabout-quick-right {
-    stroke: #C44440;
-}
-
-.roundabout-quick-right-north {
-    stroke: #00CC00;
-    stroke-dasharray: 3,3;
-    opacity: 0.5;
-}
-
-.roundabout-quick-right-east {
-    stroke: #00CC00;
-    stroke-dasharray: 10,10;
-    opacity: 0.5;
-}
-
-.roundabout-quick-right-south {
-    stroke: #00CC00;
-    stroke-dasharray: 20,10,5,5,5,10;
-    opacity: 0.5;
-}
-
-.roundabout-quick-right-west {
-    stroke: #00CC00;
-    stroke-dasharray: 30,6,0,6;
-    opacity: 0.5;
-}
-
-.traffic-lights {
+.traffic-lights,
+.traffic-lights-north,
+.traffic-lights-east,
+.traffic-lights-south,
+.traffic-lights-west {
     stroke: #8CBB4E;
 }
 
-.traffic-lights-north {
-    stroke: #0000CC;
+.roundabout,
+.roundabout-north,
+.roundabout-east,
+.roundabout-south,
+.roundabout-west {
+    stroke: #1D72AA;
+}
+
+.roundabout-quick-right,
+.roundabout-quick-right-north,
+.roundabout-quick-right-east,
+.roundabout-quick-right-south,
+.roundabout-quick-right-west {
+    stroke: #C44440;
+}
+
+.traffic-lights-north,
+.roundabout-north,
+.roundabout-quick-right-north {
     stroke-dasharray: 3,3;
     opacity: 0.5;
 }
-
-.traffic-lights-east {
-    stroke: #0000CC;
+.traffic-lights-east,
+.roundabout-east,
+.roundabout-quick-right-east {
     stroke-dasharray: 10,10;
     opacity: 0.5;
 }
-
-.traffic-lights-south {
-    stroke: #0000CC;
+.traffic-lights-south,
+.roundabout-south,
+.roundabout-quick-right-south {
     stroke-dasharray: 20,10,5,5,5,10;
     opacity: 0.5;
 }
-
-.traffic-lights-west {
-    stroke: #0000CC;
+.traffic-lights-west,
+.roundabout-west,
+.roundabout-quick-right-west {
     stroke-dasharray: 30,6,0,6;
     opacity: 0.5;
 }
+
 
 .brush .extent {
     fill-opacity: .3;
@@ -309,20 +274,21 @@ svg {
     shape-rendering: crispEdges;
 }
 
-.trait .axis {
+.trait .axis path, .trait .axis g text {
     display: none;
 }
+	.trait .axis text {
+	    display: block;
+	}
+	.trait:nth-child(17) .axis * {
+	    display: block;
+	}
+	.axis line, .axis path {
+	    fill: none;
+	    stroke: #000;
+	    shape-rendering: crispEdges;
+	}
 
-.trait:nth-child(4n) .axis, .trait:nth-child(5) .axis {
-    display: block;
-}
-
-.axis line, .axis path {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-}
-
-.axis text {
-    text-shadow: 0 1px 0 #fff;
-}
+	.axis text {
+	    text-shadow: 0 1px 0 #fff;
+	}

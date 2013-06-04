@@ -11,7 +11,6 @@ function renderGraph(source, wrapper) {
     for(var i = 0; i <= 950; i += 20)
         traits.push(i);
 
-    //var m = [80, 160, 200, 40];
     var m = [40, 50, 200, 50];
     var w = 1200 - m[1] - m[3];
     var h = 720 - m[0] - m[2];
@@ -55,7 +54,7 @@ function renderGraph(source, wrapper) {
         .data(intersections)
         .enter().append("svg:g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(" + (i%4 * 300 ) + ", " + (Math.floor(i/4) * 30 + 530) + ")"; });
+        .attr("transform", function(d, i) { return "translate(" + (i%4 * 300) + ", " + (Math.floor(i/4) * 30 + 530) + ")"; });
 
     legend.append("svg:rect")
         .attr("x", 0)
@@ -99,9 +98,9 @@ function renderGraph(source, wrapper) {
         .attr("class", "axis")
         .each(function(d) { d3.select(this).call(axis.scale(y[d])); })
         .append("svg:text")
-        .attr("text-anchor", "middle")
-        .attr("y", -9)
-        .text(String);
+            .attr("text-anchor", "middle")
+            .attr("y", 500)
+            .text(String);
 
     // Returns the path for a given data point.
     function path(d) {
