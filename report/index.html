@@ -203,18 +203,21 @@
 	</section>
 
 	<section class="analysis">
+
 		<div class="layout">
 			<h2>Analysis</h2>
 			<p>For our simulations we have created 4 scenarios, each with its characteristic distribution of traffic flow across possible turtle origins.</p>
 			<p>Simulations were executed under different load levels.</p>
 			<p>As the metric we use <strong>average time on road</strong> for currently existing turtles. Since one traffic flow from certain direction can have a significant impact on another flow, we count the average time for each direction separately.</p>
 		</div>
+
 		<hr>
+
 		<div class="layout">
 			<div class="scenario">
 				<h3>Strategy 25/25/25/25</h3>
 				<div id="graph-a" class="graph">
-					<div>
+					<div class="slider-wrapper">
 				        <input class="slider" type="range" min="1" max="26" step="1" width="300" value="1">
 				        North: <span class="north"></span>
 				        East: <span class="east"></span>
@@ -226,11 +229,15 @@
 					renderGraph(strategyA, "#graph-a");
 				</script>
 			</div>
+		</div>
 
+		<hr>
+
+		<div class="layout">
 			<div class="scenario">
 				<h3>Strategy 40/10/40/10</h3>
 				<div id="graph-b" class="graph">
-					<div>
+					<div class="slider-wrapper">
 				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
 				        North: <span class="north"></span>
 				        East: <span class="east"></span>
@@ -242,11 +249,15 @@
 					renderGraph(strategyB, "#graph-b");
 				</script>
 			</div>
+		</div>
 
+		<hr>
+		
+		<div class="layout">
 			<div class="scenario">
 				<h3>Strategy 40/40/10/10</h3>
 				<div id="graph-c" class="graph">
-					<div>
+					<div class="slider-wrapper">
 				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
 				        North: <span class="north"></span>
 				        East: <span class="east"></span>
@@ -257,9 +268,16 @@
 				<script type="text/javascript">
 					renderGraph(strategyC, "#graph-c");
 				</script>
+			</div>
+		</div>
+
+		<hr>
+
+		<div class="layout">
+			<div class="scenario">
 				<h3>Strategy 40/30/20/10</h3>
 				<div id="graph-d" class="graph">
-					<div>
+					<div class="slider-wrapper">
 				        <input class="slider" type="range" min="1" max="10" step="1" width="300" value="1">
 				        North: <span class="north"></span>
 				        East: <span class="east"></span>
@@ -271,7 +289,6 @@
 					renderGraph(strategyD, "#graph-d");
 				</script>
 			</div>
-			
 		</div>
 	</section>
 

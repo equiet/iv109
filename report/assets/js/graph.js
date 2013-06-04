@@ -55,7 +55,7 @@ function renderGraph(source, wrapper) {
         .data(intersections)
         .enter().append("svg:g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(0, " + (i * 30 + 530) + ")"; });
+        .attr("transform", function(d, i) { return "translate(" + (i%4 * 300 ) + ", " + (Math.floor(i/4) * 30 + 530) + ")"; });
 
     legend.append("svg:rect")
         .attr("x", 0)

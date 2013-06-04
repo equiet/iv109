@@ -170,10 +170,18 @@ hr {
  * ****************************** */
 
 
-.slider {
-	vertical-align: middle;
-	margin-right: 6px;
+.slider-wrapper {
+	display: inline-block;
+	background: #fff;
+	padding: 0.4em 0.8em;
+	border: 1px solid rgba(0,0,0,0.1);
+	border-radius: 5px;
 }
+	.slider {
+		width: 300px;
+		vertical-align: middle;
+		margin-right: 6px;
+	}
 
 svg {
     font-size: 11px;
@@ -197,15 +205,21 @@ svg {
 }
 
 .legend {
-    font-size: 18px;
+    font-size: 14px;
 }
+	.legend text {
+		fill: rgba(0,0,0,0.7);
+	}
+	.legend line {
+	    stroke-width: 20px;
+	}
+	.legend rect {
+		fill: none;
+	}
 
-.legend line {
-    stroke-width: 20px;
-}
+
 
 .roundabout {
-    fill: #1D72AA;
     stroke: #1D72AA;
 }
 
@@ -234,7 +248,6 @@ svg {
 }
 
 .roundabout-quick-right {
-    fill: #C44440;
     stroke: #C44440;
 }
 
@@ -263,7 +276,6 @@ svg {
 }
 
 .traffic-lights {
-    fill: #8CBB4E;
     stroke: #8CBB4E;
 }
 
