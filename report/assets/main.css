@@ -277,8 +277,8 @@ svg {
 .trait .axis path, .trait .axis g text {
     display: none;
 }
-	.trait .axis text {
-	    display: block;
+	.trait:nth-child(2n) .axis > text {
+		display: none;
 	}
 	.trait:nth-child(17) .axis * {
 	    display: block;
