@@ -1,3 +1,5 @@
+/* Graphs based on Parallel Coordinates example http://mbostock.github.io/d3/talk/20111116/iris-parallel.html */
+
 function renderGraph(source, wrapper) {
     var intersections = ["roundabout", "roundabout-quick-right", "traffic-lights"];
     var length = intersections.length;
