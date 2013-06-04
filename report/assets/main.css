@@ -103,9 +103,15 @@ section {
 .analysis .layout {
 }
 	.scenario {
+		padding-top: 1em;
 	}
+		.scenario h3 {
+			line-height: 80px;
+			margin: 0;
+			float: left;
+		}
 		.scenario .graph {
-			text-align: center;
+			text-align: right;
 			margin: 0 -100px;
 		}
 
@@ -188,6 +194,42 @@ sup {
 		content: "]";
 	}
 
+.compass {
+	float: left;
+	position: relative;
+	width: 80px;
+	height: 80px;
+	margin-right: 3em;
+	background: url("images/compass.png") no-repeat center;
+}
+	.compass span {
+		position: absolute;
+		width: 50px;
+		text-align: center;
+		line-height: 30px;
+		margin: -15px 0 0 -25px;
+		font-family: "Helvetica", sans-serif;
+		font-size: 12px;
+		font-weight: bold;
+		color: #666;
+	}
+	.compass .north {
+		left: 50%;
+		top: 0;
+	}
+	.compass .south {
+		left: 50%;
+		top: 100%;
+	}
+	.compass .east {
+		top: 50%;
+		left: 100%;
+	}
+	.compass .west {
+		top: 50%;
+		left: 0;
+	}
+
 
 /* ******************************
  * Graphs
@@ -196,28 +238,58 @@ sup {
 
 .slider-wrapper {
 	display: inline-block;
-	background: #fff;
-	padding: 0.4em 0.8em;
-	border: 1px solid rgba(0,0,0,0.1);
+	margin-top: 2.5em;
+	margin-right: 40px;
 	border-radius: 5px;
 	font-family: "Helvetica", sans-serif;
-	font-size: 14px;
+	font-size: 13px;
 }
-	.slider-wrapper span {
-		font-weight: bold;
-		display: inline-block;
-		width: 2em;
-		text-align: left;
+	.slider-values {
+		margin-top: 15px;
+		font-size: 11px;
+		width: 350px;
 	}
-	.slider {
+		.slider-values span {
+			font-weight: bold;
+			display: inline-block;
+			margin-right: 1em;
+		}
+			.slider-values span:after {
+				content: "/100"
+			}
+	.slider-bounds {
+		position: relative;
 		width: 300px;
-		vertical-align: middle;
-		margin-right: 6px;
-		margin-right: 2em;
+		left: -10px;
+		float: right;
 	}
+		.bound {
+			position: absolute;
+			top: -30px;
+			display: inline-block;
+			margin-left: -11px;
+			text-align: center;
+			font-weight: bold;
+		}
+			.bound:after {
+				content: "";
+				position: absolute;
+				border: 4px solid rgba(0,0,0,0);
+				border-top-color: rgb(9, 31, 37);
+				top: 22px;
+				left: 1px;
+			}
+		input.slider {
+			left: -15px;
+			position: absolute;
+			width: 315px;
+			vertical-align: middle;
+			margin-right: 6px;
+		}
 
 svg {
     font-size: 11px;
+    margin: 5em 0;
 }
 	svg text {
 		fill: rgba(0,0,0,0.5);
