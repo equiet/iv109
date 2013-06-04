@@ -1,5 +1,12 @@
 function renderGraph(source, wrapper) {
     var intersections = ["roundabout", "roundabout-quick-right", "traffic-lights"];
+    var length = intersections.length;
+    for(var i = 0; i < length; i++) {
+        intersections.push(intersections[i] + "-north");
+        intersections.push(intersections[i] + "-east");
+        intersections.push(intersections[i] + "-west");
+        intersections.push(intersections[i] + "-south");
+    }
     var traits = [];
     for(var i = 0; i <= 950; i += 20)
         traits.push(i);

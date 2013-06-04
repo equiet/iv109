@@ -153,7 +153,7 @@ svg {
 
 .foreground path.fade {
     stroke: #000;
-    stroke-opacity: .05;
+    stroke-opacity: .02;
 }
 
 .legend {
@@ -169,12 +169,84 @@ svg {
     stroke: #800;
 }
 
+.roundabout-north {
+    stroke: #CC3300;
+    stroke-dasharray: 3,3;
+    opacity: 0.5;
+}
+
+.roundabout-east {
+    stroke: #CC3300;
+    stroke-dasharray: 10,10;
+    opacity: 0.5;
+}
+
+.roundabout-south {
+    stroke: #CC3300;
+    stroke-dasharray: 20,10,5,5,5,10;
+    opacity: 0.5;
+}
+
+.roundabout-west {
+    stroke: #CC3300;
+    stroke-dasharray: 30,6,0,6;
+    opacity: 0.5;
+}
+
 .roundabout-quick-right {
     stroke: #080;
 }
 
+.roundabout-quick-right-north {
+    stroke: #00CC00;
+    stroke-dasharray: 3,3;
+    opacity: 0.5;
+}
+
+.roundabout-quick-right-east {
+    stroke: #00CC00;
+    stroke-dasharray: 10,10;
+    opacity: 0.5;
+}
+
+.roundabout-quick-right-south {
+    stroke: #00CC00;
+    stroke-dasharray: 20,10,5,5,5,10;
+    opacity: 0.5;
+}
+
+.roundabout-quick-right-west {
+    stroke: #00CC00;
+    stroke-dasharray: 30,6,0,6;
+    opacity: 0.5;
+}
+
 .traffic-lights {
     stroke: #008;
+}
+
+.traffic-lights-right-north {
+    stroke: #0000CC;
+    stroke-dasharray: 3,3;
+    opacity: 0.5;
+}
+
+.traffic-lights-east {
+    stroke: #0000CC;
+    stroke-dasharray: 10,10;
+    opacity: 0.5;
+}
+
+.traffic-lights-south {
+    stroke: #0000CC;
+    stroke-dasharray: 20,10,5,5,5,10;
+    opacity: 0.5;
+}
+
+.traffic-lights-west {
+    stroke: #0000CC;
+    stroke-dasharray: 30,6,0,6;
+    opacity: 0.5;
 }
 
 .brush .extent {

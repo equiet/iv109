@@ -17,19 +17,19 @@ namespace IV109
             var files = GetFiles().ToList();
 
             SaveToFile(files.Where(x => x.North == x.East && x.East == x.South && x.South == x.West),
-                        "data-a.csv");
+                        "strategy-a.js", "strategyA");
 
             SaveToFile(files.Where(x => x.North == x.South && x.East == x.West &&
                                              (x.North >= 20 && x.North < 60) &&
                                              (x.East >= 5 && x.East < 15)
                                         ),
-                        "data-b.csv");
+                        "strategy-b.js", "strategyB");
 
             SaveToFile(files.Where(x => x.North == x.East && x.West == x.South &&
                                              (x.North >= 20 && x.North < 60) &&
                                              (x.West >= 5 && x.West < 15)
                                         ),
-                        "data-c.csv");
+                        "strategy-c.js", "strategyC");
 
 
             var runs = new List<Run>();
@@ -43,7 +43,7 @@ namespace IV109
                         .ThenBy(x => x.South)
                         .ThenBy(x => x.West)
                         .ToList();
-            SaveToFile(runs, "data-d.csv");
+            SaveToFile(runs, "strategy-d.js", "strategyD");
         }
 
         private static IEnumerable<Run> GetFiles()
@@ -52,7 +52,7 @@ namespace IV109
                             .Select(fileName => new Run(fileName));
         }
 
-        private static void SaveToFile(IEnumerable<Run> runs, string name)
+        private static void SaveToFile(IEnumerable<Run> runs, string name, string var)
         {
             var output = new List<string>();
 
@@ -72,7 +72,9 @@ namespace IV109
                 previousRun = run;
             }
 
-            File.WriteAllLines(OutputPath + name, output);
+            string strategy = var + " = \"" + string.Join("\\n", output) + "\";";
+
+            File.WriteAllText(OutputPath + name, strategy);
         }
     }
 }
